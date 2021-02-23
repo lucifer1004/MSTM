@@ -25,11 +25,11 @@
          character(*) :: mpi_command
          integer :: type,comm,size,rank,newcomm
 
-         if(mpi_command.eq.'init') then
+         if(mpi_command=='init') then
             mpi_comm_world=1
             return
          endif
-         if(mpi_command.eq.'finalize') then
+         if(mpi_command=='finalize') then
             return
          endif
          if(present(mpi_comm)) then
@@ -37,35 +37,35 @@
          else
             comm=mpi_comm_world
          endif
-         if(mpi_command.eq.'size') then
+         if(mpi_command=='size') then
             mpi_size=1
             return
          endif
-         if(mpi_command.eq.'rank') then
+         if(mpi_command=='rank') then
             mpi_rank=0
             return
          endif
-         if(mpi_command.eq.'group') then
+         if(mpi_command=='group') then
             return
          endif
-         if(mpi_command.eq.'incl') then
+         if(mpi_command=='incl') then
             mpi_new_group=0
             return
          endif
-         if(mpi_command.eq.'create') then
+         if(mpi_command=='create') then
             mpi_new_comm=1
             return
          endif
-         if(mpi_command.eq.'barrier') then
+         if(mpi_command=='barrier') then
             return
          endif
 
          if(present(mpi_recv_buf_i).or.present(mpi_send_buf_i)) then
-            if(mpi_command.eq.'bcast'.or.mpi_command.eq.'send'.or.mpi_command.eq.'recv') then
+            if(mpi_command=='bcast'.or.mpi_command=='send'.or.mpi_command=='recv') then
                return
             endif
-            if(mpi_command.eq.'reduce'.or.mpi_command.eq.'allreduce' &
-               .or.mpi_command.eq.'gather') then
+            if(mpi_command=='reduce'.or.mpi_command=='allreduce' &
+               .or.mpi_command=='gather') then
                if(present(mpi_send_buf_i)) then
                   mpi_recv_buf_i(1:mpi_number)=mpi_send_buf_i(1:mpi_number)
                endif
@@ -74,11 +74,11 @@
          endif
 
          if(present(mpi_recv_buf_r).or.present(mpi_send_buf_r)) then
-            if(mpi_command.eq.'bcast'.or.mpi_command.eq.'send'.or.mpi_command.eq.'recv') then
+            if(mpi_command=='bcast'.or.mpi_command=='send'.or.mpi_command=='recv') then
                return
             endif
-            if(mpi_command.eq.'reduce'.or.mpi_command.eq.'allreduce' &
-               .or.mpi_command.eq.'gather') then
+            if(mpi_command=='reduce'.or.mpi_command=='allreduce' &
+               .or.mpi_command=='gather') then
                if(present(mpi_send_buf_r)) then
                   mpi_recv_buf_r(1:mpi_number)=mpi_send_buf_r(1:mpi_number)
                endif
@@ -87,11 +87,11 @@
          endif
 
          if(present(mpi_recv_buf_c).or.present(mpi_send_buf_c)) then
-            if(mpi_command.eq.'bcast'.or.mpi_command.eq.'send'.or.mpi_command.eq.'recv') then
+            if(mpi_command=='bcast'.or.mpi_command=='send'.or.mpi_command=='recv') then
                return
             endif
-            if(mpi_command.eq.'reduce'.or.mpi_command.eq.'allreduce' &
-               .or.mpi_command.eq.'gather') then
+            if(mpi_command=='reduce'.or.mpi_command=='allreduce' &
+               .or.mpi_command=='gather') then
                if(present(mpi_send_buf_c)) then
                   mpi_recv_buf_c(1:mpi_number)=mpi_send_buf_c(1:mpi_number)
                endif
@@ -100,11 +100,11 @@
          endif
 
          if(present(mpi_recv_buf_dp).or.present(mpi_send_buf_dp)) then
-            if(mpi_command.eq.'bcast'.or.mpi_command.eq.'send'.or.mpi_command.eq.'recv') then
+            if(mpi_command=='bcast'.or.mpi_command=='send'.or.mpi_command=='recv') then
                return
             endif
-            if(mpi_command.eq.'reduce'.or.mpi_command.eq.'allreduce' &
-              .or.mpi_command.eq.'gather') then
+            if(mpi_command=='reduce'.or.mpi_command=='allreduce' &
+              .or.mpi_command=='gather') then
                if(present(mpi_send_buf_dp)) then
                   mpi_recv_buf_dp(1:mpi_number)=mpi_send_buf_dp(1:mpi_number)
                endif
@@ -113,11 +113,11 @@
          endif
 
          if(present(mpi_recv_buf_dc).or.present(mpi_send_buf_dc)) then
-            if(mpi_command.eq.'bcast'.or.mpi_command.eq.'send'.or.mpi_command.eq.'recv') then
+            if(mpi_command=='bcast'.or.mpi_command=='send'.or.mpi_command=='recv') then
                return
             endif
-            if(mpi_command.eq.'reduce'.or.mpi_command.eq.'allreduce' &
-               .or.mpi_command.eq.'gather') then
+            if(mpi_command=='reduce'.or.mpi_command=='allreduce' &
+               .or.mpi_command=='gather') then
                if(present(mpi_send_buf_dc)) then
                   mpi_recv_buf_dc(1:mpi_number)=mpi_send_buf_dc(1:mpi_number)
                endif

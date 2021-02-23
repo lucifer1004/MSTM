@@ -63,7 +63,7 @@
          rewind(unit)
          do i=1,position
             read(unit,'(a)',iostat=ierr) c
-            if(ierr.ne.0) exit
+            if(ierr/=0) exit
          enddo
          end subroutine mstm_fseek
       end module intrinsics

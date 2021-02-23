@@ -72,9 +72,9 @@
 !  command line argument retrieval for input file
 !
          do i=0,numprocs-1
-            if(i.eq.rank) then
+            if(i==rank) then
                numargs=mstm_nargs()
-               if(numargs.eq.0) then
+               if(numargs==0) then
                   inputfile='mstm.inp'
                else
                   call mstm_getarg(inputfile)
@@ -109,7 +109,7 @@
               near_field_distance=nfdistance, &
               iterations_per_correction=niterstep, &
               write_sphere_data=writespheredata)
-         if(numtheta.gt.0) then
+         if(numtheta>0) then
             if(allocated(smt)) deallocate(smt,smtcf,smticf)
             allocate(smt(4,4,numtheta),smtcf(4,4,numtheta),smticf(4,4,numtheta))
             if(allocated(scatteringanglearray)) deallocate(scatteringanglearray)
@@ -117,7 +117,7 @@
             call getrunparameters(scattering_angle_array=scatteringanglearray)
          endif
          rimedium=ri(1,0)
-         if(cbeam.eq.0.d0) then
+         if(cbeam==0.d0) then
             xgeff=xv
          else
             xgeff=1.d0/cbeam
@@ -127,7 +127,7 @@
 !
          nonactive=1
          do i=1,nsphere
-            if(cdabs(ri(1,i)-ri(2,i)).gt.1.d-10) then
+            if(cdabs(ri(1,i)-ri(2,i))>1.d-10) then
                nonactive=0
                exit
             endif
@@ -151,21 +151,21 @@
 !
          call mstm_mpi(mpi_command='barrier')
          call mpisetup(nsphere,runnumprocs,runcomm)
-         if(fixedorrandom.le.1) then
+         if(fixedorrandom<=1) then
             call rottranmtrxsetup(nsphere,nodr,rpos,ri,storetranmat,&
                  nfdistance,ntran,runprintunit,fftranpresent,runcomm)
          endif
 !
 !  report the size of the run
 !
-         if(rank.eq.0) then
+         if(rank==0) then
             write(runprintunit,'('' maximum sphere order:'',i5)') nodrmax
             write(runprintunit,'('' estimated T matrix order:'',i5)') nodrt
             write(runprintunit,'('' number of equations:'',i9)') neqns
             call flush(runprintunit)
          endif!
 !
-         if(fixedorrandom.eq.1) then
+         if(fixedorrandom==1) then
 !
 !  random orientation option
 !
@@ -179,8 +179,8 @@
 !
 !  this option calculates the T matrix either from the beginning or where left off
 !
-            if(calctmatrix.ge.1) then
-               if(rank.eq.0) time1=mytime()
+            if(calctmatrix>=1) then
+               if(rank==0) time1=mytime()
                call tmatrixsoln(neqns,nsphere,nodr,ntran,nodrt,xsp,rpos,hostsphere,numberfieldexp, &
                     rimedium,epssoln,epstcon,niter,calctmatrix,tmatrixfile,fftranpresent, &
                     niterstep,excitedsphere,qext,qabs,qsca,istat,mpi_comm=runcomm)
@@ -189,7 +189,7 @@
                call mstm_mpi(mpi_command='bcast',mpi_number=1,mpi_send_buf_i=nodrta, &
                     mpi_rank=0)
                nodrt=nodrta(1)
-               if(rank.eq.0) then
+               if(rank==0) then
                   time2=mytime()-time1
                   call timewrite(runprintunit,' execution time:',time2)
                endif
@@ -200,7 +200,7 @@
 !
 !  read the order of the T matrix and broadcast to the processors.
 !
-               if(rank.eq.0) then
+               if(rank==0) then
                   open(3,file=tmatrixfile)
                   read(3,*) i,nodrt,i,i
                   close(3)
@@ -217,7 +217,7 @@
 !  the T matrix is available; calculate the random orientation scattering matrix
 !
             nblkt=nodrt*(nodrt+2)
-            if(numtheta.eq.0) then
+            if(numtheta==0) then
                nodrg=2
             else
                nodrg=nodrt*2
@@ -227,11 +227,11 @@
             call ranorientscatmatrix(xgeff,nsphere,nodrt,nodrg,cbeam,tmatrixfile, &
                  smc,smccf,qext,qabs,qsca, &
                  number_processors=smnumprocs)
-            if(rank.eq.0) then
+            if(rank==0) then
                qexttot=0.
                qabstot=0.
                do i=1,nsphere
-                  if(hostsphere(i).eq.0) then
+                  if(hostsphere(i)==0) then
                      qexttot=qexttot+qext(i,1)*xsp(i)*xsp(i)/xgeff/xgeff
                      qabstot=qabstot+qabs(i,1)*xsp(i)*xsp(i)/xgeff/xgeff
                   endif
@@ -251,14 +251,14 @@
             do i=1,nsphere
                qabsvol(i,:)=qabs(i,:)
                do j=1,nsphere
-                  if(hostsphere(j).eq.i) then
+                  if(hostsphere(j)==i) then
                      qabsvol(i,:)=qabsvol(i,:)-qabs(j,:)*xsp(j)*xsp(j)/xsp(i)/xsp(i)
                   endif
                enddo
             enddo
             do i=1,nsphere
                if(.not.tmonfile(i)) then
-                  if(dimag(ri(1,i)).eq.0.d0.and.dimag(ri(2,i)).eq.0.d0) then
+                  if(dimag(ri(1,i))==0.d0.and.dimag(ri(2,i))==0.d0) then
                      qabsvol(i,:)=0.d0
                   endif
                endif
@@ -267,17 +267,17 @@
             do i=1,nsphere
                qabs(i,:)=qabsvol(i,:)
                do j=1,nsphere
-                  if(hostsphere(j).eq.i) then
+                  if(hostsphere(j)==i) then
                      qabs(i,:)=qabs(i,:)+qabsvol(j,:)*xsp(j)*xsp(j)/xsp(i)/xsp(i)
                   endif
                enddo
             enddo
-         elseif(fixedorrandom.eq.0) then
+         elseif(fixedorrandom==0) then
 !
 !  fixed orientation option
 !
             call mstm_mpi(mpi_command='barrier')
-            if(runnum.eq.1) oldamnfile=' '
+            if(runnum==1) oldamnfile=' '
             call getrunparameters(calculate_scattering_coefficients=calcamn, &
                     scattering_coefficient_file=amnfile, &
                     incident_azimuth_angle_deg=alphadeg, &
@@ -289,17 +289,17 @@
             alpha=alphadeg*pi/180.d0
             beta=betadeg*pi/180.d0
             phideg=0.d0
-            if(calcamn.le.1) then
+            if(calcamn<=1) then
                if(allocated(amnp)) deallocate(amnp)
                if(allocated(qext)) deallocate(qext,qabs,qsca,qabsvol)
                allocate(amnp(neqns*2),qext(nsphere,3), qabs(nsphere,3), &
                   qsca(nsphere,3),qabsvol(nsphere,3))
             endif
-            if(calcamn.eq.1) then
+            if(calcamn==1) then
 !
 !  this option calculates the scattering coefficients
 !
-               if(rank.eq.0) time1=mytime()
+               if(rank==0) time1=mytime()
                call mstm_mpi(mpi_command='barrier')
                call fixedorsoln(neqns,nsphere,nodr,alpha,beta,cbeam,xsp,rpos,hostsphere,&
                    numberfieldexp,rimedium,epssoln,epstran,niter,amnp,qext,qabs,qsca, &
@@ -315,13 +315,13 @@
 !
 !  write the scattering coefficients to the file
 !
-               if(rank.eq.0) then
+               if(rank==0) then
                   time2=mytime()-time1
                   write(runprintunit,'('' max iterations, soln error:'',i6,e13.5)') &
                              maxiter,maxerr
                   call timewrite(runprintunit,' execution time:',time2)
-                  if(amnfile.ne.' ') then
-                     if(appendafile.eq.0) then
+                  if(amnfile/=' ') then
+                     if(appendafile==0) then
                         open(3,file=amnfile,status='replace',action='write')
                      else
                         open(3,file=amnfile,position='append')
@@ -339,7 +339,7 @@
                            amnp2=reshape(amnp(noff+nblk+1:noff+2*nblk),(/nodr(i)+2,nodr(i),2/))
                            do n=1,nodr(i)
                               do m=-n,n
-                                 if(m.le.-1) then
+                                 if(m<=-1) then
                                     ma=n+1
                                     na=-m
                                  else
@@ -357,20 +357,20 @@
                      close(3)
                   endif
                endif
-            elseif(calcamn.le.0.and.amnfile.ne.' ') then
+            elseif(calcamn<=0.and.amnfile/=' ') then
 !
 !  this option reads the scattering coefficients from the file
 !
                do j=0,numprocs-1
-                  if(rank.eq.j) then
+                  if(rank==j) then
                      open(amnunit,file=amnfile,action='read')
-                     if(runnum.eq.1.or.oldamnfile.ne.amnfile) then
+                     if(runnum==1.or.oldamnfile/=amnfile) then
                         amnfileposition=0
                      endif
                      call mstm_fseek(amnunit,amnfileposition,0,fseekstatus)
                      read(amnunit,'(2i9,5e13.5)',iostat=fseekstatus) &
                            nsphere,neqns,alpha,beta,cbeam,dummy(1:2)
-                     if(fseekstatus.ne.0) then
+                     if(fseekstatus/=0) then
                         rewind(amnunit)
                         amnfileposition=0
                      else
@@ -391,7 +391,7 @@
                         do k=1,numberfieldexp(i)
                            do n=1,nodr(i)
                               do m=-n,n
-                                 if(m.le.-1) then
+                                 if(m<=-1) then
                                     ma=n+1
                                     na=-m
                                  else
@@ -425,7 +425,7 @@
 !  calculate the efficiency factors
 !
             call mstm_mpi(mpi_command='barrier')
-            if(rank.eq.0) then
+            if(rank==0) then
                cphi=cos(phi)
                sphi=sin(phi)
                qexttot=0.d0
@@ -437,14 +437,14 @@
                do i=1,nsphere
                   qabsvol(i,:)=qabs(i,:)
                   do j=1,nsphere
-                     if(hostsphere(j).eq.i) then
+                     if(hostsphere(j)==i) then
                         qabsvol(i,:)=qabsvol(i,:)-qabs(j,:)*xsp(j)*xsp(j)/xsp(i)/xsp(i)
                      endif
                   enddo
                enddo
                do i=1,nsphere
                   if(.not.tmonfile(i)) then
-                     if(dimag(ri(1,i)).eq.0.d0.and.dimag(ri(2,i)).eq.0.d0) then
+                     if(dimag(ri(1,i))==0.d0.and.dimag(ri(2,i))==0.d0) then
                         qabsvol(i,:)=0.d0
                      endif
                   endif
@@ -453,13 +453,13 @@
                do i=1,nsphere
                   qabs(i,:)=qabsvol(i,:)
                   do j=1,nsphere
-                     if(hostsphere(j).eq.i) then
+                     if(hostsphere(j)==i) then
                         qabs(i,:)=qabs(i,:)+qabsvol(j,:)*xsp(j)*xsp(j)/xsp(i)/xsp(i)
                      endif
                   enddo
                enddo
                do i=1,nsphere
-                  if(hostsphere(i).eq.0) then
+                  if(hostsphere(i)==0) then
                      qexttotpar=qexttotpar+(qext(i,1)*cphi*cphi+2.d0*qext(i,3)*cphi*sphi &
                          +qext(i,2)*sphi*sphi)*xsp(i)*xsp(i)/xgeff/xgeff
                      qexttotper=qexttotper+(qext(i,1)*sphi*sphi-2.d0*qext(i,3)*cphi*sphi &
@@ -480,7 +480,7 @@
 !
 !  calculate the target-based expansion and rotate to the incident field frame
 !
-            if(numtheta.gt.0) then
+            if(numtheta>0) then
                allocate(amnp0(0:nodrt+1,nodrt,2,2))
                call amncommonorigin(nsphere,nodr,ntran,nodrt,rpos, &
                        hostsphere,numberfieldexp,rimedium, &
@@ -491,13 +491,13 @@
 !
 !  calculate the asymmetry parameter and the scattering matrix
 !
-               if(rank.eq.0) then
+               if(rank==0) then
                   allocate(gmn(0:2))
                   call s11expansion(amnp0,nodrt,0,1,gmn)
                   asymparm=dble(gmn(1)/gmn(0))/3.d0
                   deallocate(gmn)
                endif
-               if(azimuthaverage.eq.1) then
+               if(azimuthaverage==1) then
                   if(allocated(s00)) deallocate(s00,s02,sp22,sm22)
                   nodrg=2*nodrt
                   allocate(s00(4,4,0:nodrg),s02(4,4,0:nodrg), &
@@ -506,26 +506,26 @@
                endif
                smt=0.d0
                do i=1,numtheta
-                  if(mod(i-1,numprocs).eq.rank) then
+                  if(mod(i-1,numprocs)==rank) then
                      costheta=cos(scatteringanglearray(1,i)*pi/180.d0)
                      phi=scatteringanglearray(2,i)*pi/180.d0
 !
 ! incidentortargetframe=1: rotate scattering direction to incident frame
 !
-                     if(incidentortargetframe.eq.1) then
+                     if(incidentortargetframe==1) then
                         sintheta=sin(scatteringanglearray(1,i)*pi/180.d0)
                         cphi=cos(phi)
                         sphi=sin(phi)
                         scatrotvec=(/sintheta*cphi,sintheta*sphi,costheta/)
                         call eulerrotation(scatrotvec,(/alpha,beta,0.d0/),1,scatrotvec)
                         costheta=scatrotvec(3)/sqrt(dot_product(scatrotvec,scatrotvec))
-                        if(scatrotvec(1).eq.0.d0.and.scatrotvec(2).eq.0.d0) then
+                        if(scatrotvec(1)==0.d0.and.scatrotvec(2)==0.d0) then
                            phi=0.d0
                         else
                            phi=datan2(scatrotvec(2),scatrotvec(1))
                         endif
                      endif
-                     if(azimuthaverage.eq.0) then
+                     if(azimuthaverage==0) then
                         call scatteringmatrix(amnp0,nodrt,costheta,phi,sa,smt(:,:,i))
                      else
                         call fosmcalc(nodrt,s00,s02,sp22,sm22,costheta,smt(:,:,i))
@@ -543,11 +543,11 @@
 !
 !  output file operations
 !
-         if(rank.eq.0.and.fixedorrandom.le.1) then
+         if(rank==0.and.fixedorrandom<=1) then
             open(1,file=outfile,position='append')
             write(1,'('' calculation results for run '',/,i5)') runnum
-            if(writespheredata.eq.1) then
-               if(nonactive.eq.0) then
+            if(writespheredata==1) then
+               if(nonactive==0) then
                   write(1,'('' sphere host   ka     x-x(host) y-y(host) z-z(host)'',&
                         & ''  Re(mL)    Im(mL)   '',&
                         & ''  Re(mR)    Im(mR)     '',&
@@ -561,7 +561,7 @@
                endif
                do i=1,nsphere
                   k=hostsphere(i)
-                  if(fixedorrandom.eq.1) then
+                  if(fixedorrandom==1) then
                      qeff(1)=qext(i,1)
                      qeff(2)=qsca(i,1)
                      qeff(3)=qabs(i,1)
@@ -572,13 +572,13 @@
                      qeff(3)=(qabs(i,1)+qabs(i,2))*0.5d0
                      qeff(4)=(qabsvol(i,1)+qabsvol(i,2))*0.5d0
                   endif
-                  if(k.eq.0) then
+                  if(k==0) then
                      rposi=rpos(:,i)+gbfocus
                   else
                      rposi=rpos(:,i)-rpos(:,k)
                   endif
                   if(.not.tmonfile(i)) then
-                     if(nonactive.eq.0) then
+                     if(nonactive==0) then
                         write(1,'(2i5,4f10.4,4f10.6,4e13.5)') i, k,xsp(i),rposi, ri(:,i), &
                            qeff(1),qeff(2),qeff(3),qeff(4)
                      else
@@ -586,7 +586,7 @@
                            qeff(1),qeff(2),qeff(3),qeff(4)
                      endif
                   else
-                     if(nonactive.eq.0) then
+                     if(nonactive==0) then
                         write(1,'(2i5,4f10.4,5x,a35,4e13.5)') i, k,xsp(i),rposi, tmfile(i), &
                            qeff(1),qeff(2),qeff(3),qeff(4)
                      else
@@ -596,7 +596,7 @@
                   endif
                enddo
             endif
-            if(fixedorrandom.eq.1) then
+            if(fixedorrandom==1) then
                write(1,'('' total ext, abs, scat efficiencies, w.r.t. xv, and asym. parm'')')
                write(1,'(6e13.5)') qexttot,qabstot,qscatot,asymparm
             else
@@ -608,14 +608,14 @@
                write(1,'(6e13.5)') qexttotper,qabstotper,qscatotper
             endif
 
-            if(numtheta.gt.0) then
-               if(normalizesm.eq.0) then
+            if(numtheta>0) then
+               if(normalizesm==0) then
                   write(1,'('' scattering matrix elements'')')
                else
                   write(1,'('' scattering matrix elements (normalized w/ S11)'')')
                endif
-               if(fixedorrandom.eq.0) then
-                  if(azimuthaverage.eq.0) then
+               if(fixedorrandom==0) then
+                  if(azimuthaverage==0) then
                      write(1,'(''   theta     phi'',$)')
                   else
                      write(1,'(''   theta'',$)')
@@ -637,13 +637,13 @@
                do i=1,numtheta
                   thetad=scatteringanglearray(1,i)
                   phi=scatteringanglearray(2,i)
-                  if(normalizesm.eq.1) then
+                  if(normalizesm==1) then
                      s11=smt(1,1,i)
                      smt(:,:,i)=smt(:,:,i)/s11
                      smt(1,1,i)=s11
                   endif
-                  if(fixedorrandom.eq.0) then
-                     if(azimuthaverage.eq.0) then
+                  if(fixedorrandom==0) then
+                     if(azimuthaverage==0) then
                         write(1,'(2f8.2,$)') thetad,phi
                      else
                         write(1,'(f8.2,$)') thetad
@@ -663,7 +663,7 @@
                   endif
                   write(1,*)
                enddo
-               if(fixedorrandom.eq.1) then
+               if(fixedorrandom==1) then
                   write(1,'('' scattering matrix expansion coefficients'')')
                   write(1,'(''    w  a11         a22         a33         '',&
                    &''a23         a32         a44         a12         '',&
@@ -680,16 +680,16 @@
 !
 !  near field calculation options
 !
-         if(fixedorrandom.ne.1) call getrunparameters(calculate_near_field=calcnf)
-         if(fixedorrandom.ne.1.and.calcnf.eq.1) then
+         if(fixedorrandom/=1) call getrunparameters(calculate_near_field=calcnf)
+         if(fixedorrandom/=1.and.calcnf==1) then
             call getrunparameters(near_field_plane_coord=nfplane, &
                  near_field_plane_position=nfplanepos,near_field_plane_vertices=nfplanevert, &
                  spacial_step_size=deltax,polarization_angle_deg=gammadeg, &
                  near_field_output_file=nfoutfile,near_field_output_data=nfoutdata, &
                  plane_wave_epsilon=epspw,append_nf_file=appendnffile)
             nfoutunit=2
-            if(rank.eq.0) then
-               if(appendnffile.eq.0) then
+            if(rank==0) then
+               if(appendnffile==0) then
                   open(2,file=nfoutfile,status='replace',action='write')
                else
                   open(2,file=nfoutfile,position='append')
@@ -699,7 +699,7 @@
             call nearfieldgridcalc(neqns,nsphere,nodr,alpha,beta,cbeam,xsp,rpos,ri, &
                        hostsphere,numberfieldexp,amnp,nfplane,nfplanepos,nfplanevert, &
                        gbfocus,deltax,gamma,nfoutunit,epspw,nfoutdata,runprintunit)
-            if(rank.eq.0) then
+            if(rank==0) then
                close(nfoutunit)
             endif
          endif
@@ -711,7 +711,7 @@
 !
 !  all done!
 !
-      if(rank.eq.0) close(1)
+      if(rank==0) close(1)
       call mstm_mpi(mpi_command='barrier')
       call mstm_mpi(mpi_command='finalize')
       end

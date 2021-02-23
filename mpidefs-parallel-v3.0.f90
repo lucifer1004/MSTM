@@ -20,7 +20,7 @@
          character(*) :: mpi_command
          integer :: type,ierr,comm,size,rank,group,newcomm
 
-         if(mpi_command.eq.'init') then
+         if(mpi_command=='init') then
             call mpi_init(ierr)
             mstm_mpi_comm_world=mpi_comm_world
             mstm_mpi_sum=mpi_sum
@@ -28,7 +28,7 @@
             mstm_mpi_min=mpi_min
             return
          endif
-         if(mpi_command.eq.'finalize') then
+         if(mpi_command=='finalize') then
             call mpi_finalize(ierr)
             return
          endif
@@ -37,51 +37,51 @@
          else
             comm=mpi_comm_world
          endif
-         if(mpi_command.eq.'size') then
+         if(mpi_command=='size') then
             call mpi_comm_size(comm,size,ierr)
             mpi_size=size
             return
          endif
-         if(mpi_command.eq.'rank') then
+         if(mpi_command=='rank') then
             call mpi_comm_rank(comm,rank,ierr)
             mpi_rank=rank
             return
          endif
-         if(mpi_command.eq.'group') then
+         if(mpi_command=='group') then
             call mpi_comm_group(comm,group,ierr)
             mpi_group=group
             return
          endif
-         if(mpi_command.eq.'incl') then
+         if(mpi_command=='incl') then
             call mpi_group_incl(mpi_group,mpi_size,mpi_new_group_list,group,ierr)
             mpi_new_group=group
             return
          endif
-         if(mpi_command.eq.'create') then
+         if(mpi_command=='create') then
             call mpi_comm_create(comm,mpi_group,newcomm,ierr)
             mpi_new_comm=newcomm
             return
          endif
-         if(mpi_command.eq.'barrier') then
+         if(mpi_command=='barrier') then
             call mpi_barrier (comm,ierr)
             return
          endif
 
          if(present(mpi_recv_buf_i).or.present(mpi_send_buf_i)) then
             type=mpi_integer
-            if(mpi_command.eq.'bcast') then
+            if(mpi_command=='bcast') then
                call MPI_BCAST (mpi_send_buf_i,mpi_number,type,mpi_rank,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'send') then
+            if(mpi_command=='send') then
                call mpi_send(mpi_send_buf_i,mpi_number,type,mpi_rank,1,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'recv') then
+            if(mpi_command=='recv') then
                call mpi_recv(mpi_recv_buf_i,mpi_number,type,mpi_rank,1,comm,stat,ierr)
                return
             endif
-            if(mpi_command.eq.'reduce') then
+            if(mpi_command=='reduce') then
                if(present(mpi_send_buf_i)) then
                   call mpi_reduce(mpi_send_buf_i,mpi_recv_buf_i,mpi_number,type,mpi_operation, &
                                mpi_rank,comm,ierr)
@@ -91,7 +91,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'allreduce') then
+            if(mpi_command=='allreduce') then
                if(present(mpi_send_buf_i)) then
                   call mpi_allreduce(mpi_send_buf_i,mpi_recv_buf_i,mpi_number,type,mpi_operation, &
                                comm,ierr)
@@ -101,7 +101,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'gather') then
+            if(mpi_command=='gather') then
                if(present(mpi_send_buf_i)) then
                   call mpi_gather(mpi_send_buf_i,mpi_number,type,mpi_recv_buf_i,mpi_number,type, &
                                mpi_rank,comm,ierr)
@@ -115,19 +115,19 @@
 
          if(present(mpi_recv_buf_r).or.present(mpi_send_buf_r)) then
             type=mpi_real
-            if(mpi_command.eq.'bcast') then
+            if(mpi_command=='bcast') then
                call MPI_BCAST (mpi_send_buf_r,mpi_number,type,mpi_rank,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'send') then
+            if(mpi_command=='send') then
                call mpi_send(mpi_send_buf_r,mpi_number,type,mpi_rank,1,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'recv') then
+            if(mpi_command=='recv') then
                call mpi_recv(mpi_recv_buf_r,mpi_number,type,mpi_rank,1,comm,stat,ierr)
                return
             endif
-            if(mpi_command.eq.'reduce') then
+            if(mpi_command=='reduce') then
                if(present(mpi_send_buf_r)) then
                   call mpi_reduce(mpi_send_buf_r,mpi_recv_buf_r,mpi_number,type,mpi_operation, &
                                mpi_rank,comm,ierr)
@@ -137,7 +137,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'allreduce') then
+            if(mpi_command=='allreduce') then
                if(present(mpi_send_buf_r)) then
                   call mpi_allreduce(mpi_send_buf_r,mpi_recv_buf_r,mpi_number,type,mpi_operation, &
                                comm,ierr)
@@ -147,7 +147,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'gather') then
+            if(mpi_command=='gather') then
                if(present(mpi_send_buf_r)) then
                   call mpi_gather(mpi_send_buf_r,mpi_number,type,mpi_recv_buf_r,mpi_number,type, &
                                mpi_rank,comm,ierr)
@@ -161,19 +161,19 @@
 
          if(present(mpi_recv_buf_c).or.present(mpi_send_buf_c)) then
             type=mpi_complex
-            if(mpi_command.eq.'bcast') then
+            if(mpi_command=='bcast') then
                call MPI_BCAST (mpi_send_buf_c,mpi_number,type,mpi_rank,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'send') then
+            if(mpi_command=='send') then
                call mpi_send(mpi_send_buf_c,mpi_number,type,mpi_rank,1,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'recv') then
+            if(mpi_command=='recv') then
                call mpi_recv(mpi_recv_buf_c,mpi_number,type,mpi_rank,1,comm,stat,ierr)
                return
             endif
-            if(mpi_command.eq.'reduce') then
+            if(mpi_command=='reduce') then
                if(present(mpi_send_buf_c)) then
                   call mpi_reduce(mpi_send_buf_c,mpi_recv_buf_c,mpi_number,type,mpi_operation, &
                                mpi_rank,comm,ierr)
@@ -183,7 +183,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'allreduce') then
+            if(mpi_command=='allreduce') then
                if(present(mpi_send_buf_c)) then
                   call mpi_allreduce(mpi_send_buf_c,mpi_recv_buf_c,mpi_number,type,mpi_operation, &
                                comm,ierr)
@@ -193,7 +193,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'gather') then
+            if(mpi_command=='gather') then
                if(present(mpi_send_buf_c)) then
                   call mpi_gather(mpi_send_buf_c,mpi_number,type,mpi_recv_buf_c,mpi_number,type, &
                                mpi_rank,comm,ierr)
@@ -208,19 +208,19 @@
 
          if(present(mpi_recv_buf_dp).or.present(mpi_send_buf_dp)) then
             type=mpi_double_precision
-            if(mpi_command.eq.'bcast') then
+            if(mpi_command=='bcast') then
                call MPI_BCAST (mpi_send_buf_dp,mpi_number,type,mpi_rank,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'send') then
+            if(mpi_command=='send') then
                call mpi_send(mpi_send_buf_dp,mpi_number,type,mpi_rank,1,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'recv') then
+            if(mpi_command=='recv') then
                call mpi_recv(mpi_recv_buf_dp,mpi_number,type,mpi_rank,1,comm,stat,ierr)
                return
             endif
-            if(mpi_command.eq.'reduce') then
+            if(mpi_command=='reduce') then
                if(present(mpi_send_buf_dp)) then
                   call mpi_reduce(mpi_send_buf_dp,mpi_recv_buf_dp,mpi_number,type,mpi_operation, &
                                mpi_rank,comm,ierr)
@@ -230,7 +230,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'allreduce') then
+            if(mpi_command=='allreduce') then
                if(present(mpi_send_buf_dp)) then
                   call mpi_allreduce(mpi_send_buf_dp,mpi_recv_buf_dp,mpi_number,type,mpi_operation, &
                                comm,ierr)
@@ -240,7 +240,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'gather') then
+            if(mpi_command=='gather') then
                if(present(mpi_send_buf_dp)) then
                   call mpi_gather(mpi_send_buf_dp,mpi_number,type,mpi_recv_buf_dp,mpi_number,type, &
                                mpi_rank,comm,ierr)
@@ -254,19 +254,19 @@
 
          if(present(mpi_recv_buf_dc).or.present(mpi_send_buf_dc)) then
             type=mpi_double_complex
-            if(mpi_command.eq.'bcast') then
+            if(mpi_command=='bcast') then
                call MPI_BCAST (mpi_send_buf_dc,mpi_number,type,mpi_rank,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'send') then
+            if(mpi_command=='send') then
                call mpi_send(mpi_send_buf_dc,mpi_number,type,mpi_rank,1,comm,ierr)
                return
             endif
-            if(mpi_command.eq.'recv') then
+            if(mpi_command=='recv') then
                call mpi_recv(mpi_recv_buf_dc,mpi_number,type,mpi_rank,1,comm,stat,ierr)
                return
             endif
-            if(mpi_command.eq.'reduce') then
+            if(mpi_command=='reduce') then
                if(present(mpi_send_buf_dc)) then
                   call mpi_reduce(mpi_send_buf_dc,mpi_recv_buf_dc,mpi_number,type,mpi_operation, &
                                mpi_rank,comm,ierr)
@@ -276,7 +276,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'allreduce') then
+            if(mpi_command=='allreduce') then
                if(present(mpi_send_buf_dc)) then
                   call mpi_allreduce(mpi_send_buf_dc,mpi_recv_buf_dc,mpi_number,type,mpi_operation, &
                                comm,ierr)
@@ -286,7 +286,7 @@
                endif
                return
             endif
-            if(mpi_command.eq.'gather') then
+            if(mpi_command=='gather') then
                if(present(mpi_send_buf_dc)) then
                   call mpi_gather(mpi_send_buf_dc,mpi_number,type,mpi_recv_buf_dc,mpi_number,type, &
                                mpi_rank,comm,ierr)

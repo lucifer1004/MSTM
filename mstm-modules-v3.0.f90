@@ -23,7 +23,7 @@
 !
 !  bcof(n,l)=((n+l)!/(n!l!))^(1/2)
 !
-         if(notd.le.nmax) return
+         if(notd<=nmax) return
          nmax=max(nmax,notd)
          nbc=6*notd+6
          if(allocated(fnr)) deallocate(monen,fnr,bcof)
@@ -122,10 +122,10 @@
          integer :: iunit
          real(8) :: time,time2
          character(*) :: char1
-         if(time.gt.3600.d0) then
+         if(time>3600.d0) then
             time2=time/3600.d0
             write(iunit,'(a,f9.3,'' hours'')') char1,time2
-         elseif(time.gt.60.d0) then
+         elseif(time>60.d0) then
             time2=time/60.d0
             write(iunit,'(a,f9.2,'' min'')') char1,time2
          else
@@ -140,7 +140,7 @@
          implicit none
          integer :: n,nmax,ns,i
          real(8) :: ds,dns,sn,psi(0:n),psit,ds2,sum,eps,err
-         if(int(ds).lt.n) then
+         if(int(ds)<n) then
             ns=nint(ds+4.*(ds**.3333d0)+17)
             ns=max(n+10,ns)
             dns=0.d0
@@ -163,7 +163,7 @@
                sum=sum+dble(i+i+1)*psit*psit/ds2
                err=dabs(1.d0-sum)
                psi(i)=psit
-               if(err.lt.eps) then
+               if(err<eps) then
                   nmax=i
                   return
                endif
@@ -190,7 +190,7 @@
          integer :: n,i,ns
          real(8) :: ds,dns,sn,chi0,chi1,chi2,psi,psi0,psi1
          complex(8) :: xi(0:n)
-         if(int(ds).lt.n) then
+         if(int(ds)<n) then
             ns=nint(ds+4.*(ds**.3333)+17)
             ns=max(n+10,ns)
             dns=0.d0
@@ -264,7 +264,7 @@
          data ci/(0.d0,1.d0)/
          xi(0)=-ci*cdexp(ci*ds)
          psi0=cdsin(ds)
-         if(cdabs(xi(0))/cdabs(psi0).lt.1.d-6) then
+         if(cdabs(xi(0))/cdabs(psi0)<1.d-6) then
             xi(1)=-cdexp(ci*ds)*(ci+ds)/ds
             do i=2,n
                xi(i)=dble(i+i+1)/ds*xi(i-1)-xi(i-2)
@@ -303,7 +303,7 @@
          complex(8) :: z,csj(0:n),csy(0:n),csa,csb,cs,cf0,cf1,cf
          a0=cdabs(z)
          nm=n
-         if (a0.lt.1.0d-60) then
+         if (a0<1.0d-60) then
             csj=(0.d0,0.d0)
             csy=(-1.d300,0.d0)
             csy(0)=(1.d0,0.d0)
@@ -312,11 +312,11 @@
          csj=(0.d0,0.d0)
          csj(0)=cdsin(z)/z
          csj(1)=(csj(0)-cdcos(z))/z
-         if (n.ge.2) then
+         if (n>=2) then
             csa=csj(0)
             csb=csj(1)
             m=msta1(a0,200)
-            if (m.lt.n) then
+            if (m<n) then
                nm=m
             else
                m=msta2(a0,n,15)
@@ -325,12 +325,12 @@
             cf1=1.0d0-100
             do k=m,0,-1
                cf=(2.0d0*k+3.0d0)*cf1/z-cf0
-               if (k.le.nm) csj(k)=cf
+               if (k<=nm) csj(k)=cf
                cf0=cf1
                cf1=cf
             enddo
-            if (cdabs(csa).gt.cdabs(csb)) cs=csa/cf
-            if (cdabs(csa).le.cdabs(csb)) cs=csb/cf0
+            if (cdabs(csa)>cdabs(csb)) cs=csa/cf
+            if (cdabs(csa)<=cdabs(csb)) cs=csb/cf0
             do k=0,min(nm,n)
                csj(k)=cs*csj(k)
             enddo
@@ -339,7 +339,7 @@
          csy(0)=-cdcos(z)/z
          csy(1)=(csy(0)-cdsin(z))/z
          do k=2,min(nm,n)
-            if (cdabs(csj(k-1)).gt.cdabs(csj(k-2))) then
+            if (cdabs(csj(k-1))>cdabs(csj(k-2))) then
                csy(k)=(csj(k)*csy(k-1)-1.0d0/(z*z))/csj(k-1)
             else
                csy(k)=(csj(k)*csy(k-2)-(2.0d0*k-1.0d0)/z**3)/csj(k-2)
@@ -371,7 +371,7 @@
          do it=1,20
             nn=n1-(n1-n0)/(1.0d0-f0/f1)
             f=envj(nn,a0)-mp
-            if(abs(nn-n1).lt.1) exit
+            if(abs(nn-n1)<1) exit
             n0=n1
             f0=f1
             n1=nn
@@ -400,7 +400,7 @@
          a0=dabs(x)
          hmp=0.5d0*dble(mp)
          ejn=envj(n,a0)
-         if (ejn.le.hmp) then
+         if (ejn<=hmp) then
             obj=mp
             n0=int(1.1*a0)
          else
@@ -413,7 +413,7 @@
          do it=1,20
             nn=n1-(n1-n0)/(1.0d0-f0/f1)
             f=envj(nn,a0)-obj
-            if (abs(nn-n1).lt.1) exit
+            if (abs(nn-n1)<1) exit
             n0=n1
             f0=f1
             n1=nn
@@ -445,10 +445,10 @@
          wmax=n+l
          wmin=max(abs(n-l),abs(m+k))
          vcn(wmax)=bcof(n+m,l+k)*bcof(n-m,l-k)/bcof(n+n,l+l)
-         if(wmin.eq.wmax) return
+         if(wmin==wmax) return
          vcn(wmax-1)=vcn(wmax)*(l*m-k*n)*fnr(2*(l+n)-1)/fnr(l)/fnr(n)&
         &  /fnr(n+l+m+k)/fnr(n+l-m-k)
-         if(wmin.eq.wmax-1) return
+         if(wmin==wmax-1) return
          mk=m+k
          vcmax=abs(vcn(wmax))+abs(vcn(wmax-1))
 !
@@ -463,17 +463,17 @@
         &     *fnr(n+l-w+2)*fnr(n+l+w)/(dble(2*(w-1))*fnr(2*w-3)&
         &     *fnr(2*w-1))
             vcn(w-2)=(t2*vcn(w-1)-vcn(w)/t1)/t3
-            if(mod(wmax-w,2).eq.1) then
+            if(mod(wmax-w,2)==1) then
                vctest=abs(vcn(w-2))+abs(vcn(w-1))
                vcmax=max(vcmax,vctest)
                rat=vctest/vcmax
 !
 !  if/when the coefficients start to decrease in magnitude, an upwards recurrence takes over
 !
-               if(rat.lt.0.01d0) exit
+               if(rat<0.01d0) exit
             endif
          enddo
-         if(w-2.gt.wmin) then
+         if(w-2>wmin) then
             wmax=w-3
             call vcfuncuprec(m,n,k,l,wmax,vcn)
          endif
@@ -491,9 +491,9 @@
          real(8) :: vcn(0:n+l),t1,t2,t3,vc1
          mk=abs(m+k)
          nl=abs(n-l)
-         if(nl.ge.mk) then
+         if(nl>=mk) then
             w=nl
-            if(n.ge.l) then
+            if(n>=l) then
                m1=m
                n1=n
                l1=l
@@ -508,7 +508,7 @@
                *bcof(l1-k1,w+m1+k1)/bcof(l1+l1,w+w+1)
          else
             w=mk
-            if(m+k.ge.0) then
+            if(m+k>=0) then
                vc1=(-1)**(n+m)*bcof(n-l+w,l-k)*bcof(l-n+w,n-m) &
                   /bcof(w+w+1,n+l-w)
             else
@@ -521,10 +521,10 @@
          w=w1+1
          mk=m+k
          w2=min(wmax,n+l)
-         if(w2.gt.w1) then
+         if(w2>w1) then
             t1=2*w*fnr(w+w+1)*fnr(w+w-1)/(fnr(w+mk)*fnr(w-mk) &
               *fnr(n-l+w)*fnr(l-n+w)*fnr(n+l-w+1)*fnr(n+l+w+1))
-            if(w1.eq.0) then
+            if(w1==0) then
                t2=.5*dble(m-k)
             else
                t2=dble((m-k)*w*(w-1)-mk*n*(n+1)+mk*l*(l+1)) &
@@ -558,7 +558,7 @@
          dc=0.d0
          do m=0,mmax
             dc(m,m)=(-1)**m*(0.5d0*sbe)**m*bcof(m,m)
-            if(m.eq.nmax) exit
+            if(m==nmax) exit
             dc(m,m+1)=fnr(m+m+1)*cbe*dc(m,m)
             do n=m+1,nmax-1
                dc(m,n+1)=(-fnr(n-m)*fnr(n+m)*dc(m,n-1)+dble(n+n+1)*cbe*dc(m,n)) &
@@ -626,7 +626,7 @@
                   kn=nn1+k
                   dkm1=dkm0
                   dkm0=dc(m1,kn)
-                  if(k.eq.n) then
+                  if(k==n) then
                      dkn1=0.d0
                   else
                      dkn1=dc(m1,kn+1)
@@ -798,7 +798,7 @@
                      do n=1,nodr(i)
                         do m=0,nodr(i)+1
                            l=l+1
-                           if(hostsphere(i).eq.0.and.j.eq.1) then
+                           if(hostsphere(i)==0.and.j==1) then
                               pmnp(l)=phasefac*pmnp0(m,n,p,k)
                            else
                               pmnp(l)=0.d0
@@ -839,14 +839,14 @@
          data ci,nlmax0/(0.d0,1.d0),0/
          nlmax=max(nmax,lmax)
          nlmin=min(nmax,lmax)
-         if(nlmax.gt.nlmax0) then
+         if(nlmax>nlmax0) then
             nlmax0=nlmax
             call axialtrancoefinit(nlmax)
          endif
 
-         if(r.eq.0.d0) then
+         if(r==0.d0) then
             ac=(0.d0,0.d0)
-            if(itype.ne.1) return
+            if(itype/=1) return
             iadd0=0
             do ma=0,nlmin
                m1=max(1,ma)
@@ -865,7 +865,7 @@
          endif
          z=r*ri
          do p=1,2
-            if(itype.eq.1) then
+            if(itype==1) then
                call cricbessel(nmax+lmax,z(p),xi(0:,p))
             else
                call crichankel(nmax+lmax,z(p),xi(0:,p))
@@ -907,7 +907,7 @@
                   act(n,l,2)=actt(1,2)-actt(2,2)
                enddo
 
-               if(m1.lt.nlmin) then
+               if(m1<nlmin) then
                   do n=m1,nmax-1
                      np1=n+1
                      nm1=n-1
@@ -918,7 +918,7 @@
                           + sp*(fn_const(m,m1:lm1)-fn_const(m,n))*ci*act(n,m1:lm1,p)
                         act(np1,m1+1:lm1,p)=act(np1,m1+1:lm1,p) &
                           + act(n,m1:lmax-2,p)*fnm1_const(m,lp1:lm1)
-                        if(n.gt.m1) then
+                        if(n>m1) then
                            act(np1,m1:lm1,p)=act(np1,m1:lm1,p) &
                              + act(nm1,m1:lm1,p)*fnm1_const(m,n)
                         endif
@@ -995,7 +995,7 @@
          complex(8) :: ri,ci,z,a,b,c
          complex(8) :: xi(0:nlim+lmax)
          data ci/(0.d0,1.d0)/
-         if(r.eq.0.d0) then
+         if(r==0.d0) then
             nmax=lmax
             return
          endif
@@ -1018,7 +1018,7 @@
             b=0.
             do w=wmin,wmax
                alnw=vc1(w)*vc1(w)
-               if(mod(n+l+w,2).eq.0) then
+               if(mod(n+l+w,2)==0) then
                   a=a+alnw*xi(w)
                else
                   b=b+alnw*xi(w)
@@ -1027,7 +1027,7 @@
             a=c*a
             b=c*b
             sum=sum+a*conjg(a)+b*conjg(b)
-            if(abs(1.d0-sum).lt.eps) exit
+            if(abs(1.d0-sum)<eps) exit
          enddo
          nmax=min(n,nlim)
          nmax=max(nmax,lmax)
@@ -1058,9 +1058,9 @@
          integer function moffset(m,ntot,ltot)
          implicit none
          integer :: m,ntot,ltot
-         if(m.eq.0) then
+         if(m==0) then
             moffset=0
-         elseif(m.lt.0) then
+         elseif(m<0) then
             moffset=2*(-((1+m)*(2+m)*(3+2*m +3*ntot)) &
                    -3*ltot*(2+ntot+m*(3+m+2*ntot)))/3
          else
@@ -1111,7 +1111,7 @@
          nblkr1=nrow1*(nrow1+2)
          nblkc0=(ncol0-1)*(ncol0+1)
          nblkc1=ncol1*(ncol1+2)
-         if(r.eq.0.d0) then
+         if(r==0.d0) then
             do n=nblkr0+1,nblkr1
                mn=n-nblkr0+iaddrow0
                do l=nblkc0+1,nblkc1
@@ -1120,7 +1120,7 @@
                      ac(p,mn,kl)=0.d0
                   enddo
                enddo
-               if(n.gt.nblkc0.and.n.le.nblkc1.and.itype.eq.1) then
+               if(n>nblkc0.and.n<=nblkc1.and.itype==1) then
                   ac(1,mn,n-nblkc0+iaddcol0)=1.d0
                   ac(2,mn,n-nblkc0+iaddcol0)=1.d0
                endif
@@ -1133,7 +1133,7 @@
          call ephicoef(ephi,ntot,ephim)
          z=ri*r
          do p=1,2
-            if(itype.eq.1) then
+            if(itype==1) then
                call cricbessel(ntot,z(p),jnc(0,p))
             else
                call crichankel(ntot,z(p),jnc(0,p))
@@ -1163,7 +1163,7 @@
                      do p=1,2
                         do w=wmax,wmin,-1
                            vw=w*(w+1)+v
-                           if(mod(wmax-w,2).eq.0) then
+                           if(mod(wmax-w,2)==0) then
                               a=a+vc1(w)*vc2(w)*jnc(w,p)*drot(0,vw)
                            else
                               b=b+vc1(w)*vc2(w)*jnc(w,p)*drot(0,vw)
@@ -1192,14 +1192,14 @@
          real(8) :: xp(3),r,ct
          complex(8) :: ep
          r=xp(1)*xp(1)+xp(2)*xp(2)+xp(3)*xp(3)
-         if(r.eq.0.d0) then
+         if(r==0.d0) then
             ct=1.d0
             ep=(1.d0,0.d0)
             return
          endif
          r=sqrt(r)
          ct=xp(3)/r
-         if(xp(1).eq.0.d0.and.xp(2).eq.0.d0) then
+         if(xp(1)==0.d0.and.xp(2)==0.d0) then
             ep=(1.d0,0.d0)
          else
             ep=dcmplx(xp(1),xp(2))/sqrt(xp(1)*xp(1)+xp(2)*xp(2))
@@ -1216,7 +1216,7 @@
          real(8) :: xp(3),eulerangf(3),eulerang(3),cang(3),sang(3), &
                     mat1(3,3),mat2(3,3),mat3(3,3),xprot(3),xpt(3)
          xpt=xp
-         if(dir.eq.1) then
+         if(dir==1) then
             eulerang=eulerangf
          else
             eulerang(1:3)=-eulerangf(3:1:-1)
@@ -1279,7 +1279,7 @@
          do n=1,n1
             sum=sum+ci**n*dble(n+n+1)*jn(n)*eir
             err=cdabs(1.d0-sum)
-            if(err.lt.eps) then
+            if(err<eps) then
                nodr=n
                deallocate(jn)
                return
@@ -1309,14 +1309,14 @@
                        b2vec(-nodr:nodr),z2vec(-nodr:nodr)
          complex(8) :: umn(-nodr-2:nodr+2,0:nodr+1,2), hn(0:nodr+1,2), ephim(-nodr-1:nodr+1)
          data ci,nodrmax/(0.d0,1.d0),0/
-         if(nodr.gt.nodrmax) then
+         if(nodr>nodrmax) then
             nodrmax=nodr
             call init(nodr+2)
          endif
          call cartosphere(rpos,r,ct,ephi)
-         if(r.le.1.d-4) then
+         if(r<=1.d-4) then
             vwh(:,:,1:nodr*(nodr+2))=(0.d0,0.d0)
-            if(itype.eq.3) return
+            if(itype==3) return
             do p=1,2
                vwh(1,p,1)=.5d0*fnr(2)/fnr(3)
                vwh(2,p,1)=-.5d0*ci*fnr(2)/fnr(3)
@@ -1333,7 +1333,7 @@
 !
          a=ri*r
          do p=1,2
-            if(itype.eq.1) then
+            if(itype==1) then
                call cricbessel(nodrp1,a(p),hn(0,p))
             else
                call crichankel(nodrp1,a(p),hn(0,p))
@@ -1395,14 +1395,14 @@
                        a2,b2,z2,umn(-2:2,0:nodr+1,2), hn(0:nodr+1,2), &
                        ephim(-2:2)
          data ci,nodrmax/(0.d0,1.d0),0/
-         if(nodr.gt.nodrmax) then
+         if(nodr>nodrmax) then
             nodrmax=nodr
             call init(nodr+2)
          endif
          call cartosphere(rpos,r,ct,ephi)
-         if(r.le.1.d-4) then
+         if(r<=1.d-4) then
             vwh(:,:,:,1:nodr)=(0.d0,0.d0)
-            if(itype.eq.3) return
+            if(itype==3) return
             vwh(1,1,1,1)=.5d0*fnr(2)/fnr(3)
             vwh(2,1,1,1)=-.5d0*ci*fnr(2)/fnr(3)
             vwh(1,1,2,1)=-.5d0*fnr(2)/fnr(3)
@@ -1413,7 +1413,7 @@
          nodrm1=nodr-1
          a=ri*r
          do p=1,2
-            if(itype.eq.1) then
+            if(itype==1) then
                call cricbessel(nodrp1,a(p),hn(0,p))
             else
                call crichankel(nodrp1,a(p),hn(0,p))
@@ -1524,7 +1524,7 @@
          call mstm_mpi(mpi_command='group',mpi_group=base_group)
          newnumprocs=nsphere*(nsphere-1)/2
          newnumprocs=max(newnumprocs,1)
-         if(newnumprocs.ge.numprocs) then
+         if(newnumprocs>=numprocs) then
             mpicomm=mpi_comm_world
             newnumprocs=numprocs
          else
@@ -1640,13 +1640,13 @@
             sdat=1.d0
             read(iunit,'(a)',end=20) parmid
             call numberinstring(parmid,numrec)
-            if(numrec.eq.4) then
+            if(numrec==4) then
                read(parmid,*) sdat(1:4)
-            elseif(numrec.eq.6) then
+            elseif(numrec==6) then
                read(parmid,*) sdat(1:6)
-            elseif(numrec.eq.8) then
+            elseif(numrec==8) then
                read(parmid,*) sdat(1:8)
-            elseif(numrec.eq.5) then
+            elseif(numrec==5) then
                read(parmid,*) sdat(1:4),tmfile(i)
                tmonfile(i)=.true.
                sdat(5:8)=0.d0
@@ -1668,7 +1668,7 @@
             betaimag=sdat(8)*imchiralfactor
             ribulk=dcmplx(rireal,riimag)
             beta=dcmplx(betareal,betaimag)
-            if(beta.eq.(0.d0,0.d0)) then
+            if(beta==(0.d0,0.d0)) then
                ri(1,i)=ribulk
                ri(2,i)=ribulk
             else
@@ -1684,10 +1684,10 @@
          integer :: iunit,num,i
          character :: string*35,frec*60
          i=0
-         do while(i.lt.num)
+         do while(i<num)
             read(iunit,'(a)',end=20) frec
             frec=frec(:index(frec,' '))
-            if(frec.eq.string) i=i+1
+            if(frec==string) i=i+1
          enddo
          return
 20       string='error'
@@ -1706,7 +1706,7 @@
          i=1
          do
             a=parmid(i:i)
-            if(a.ne.' '.and.a.ne.','.and.ichar(a).ne.9) then
+            if(a/=' '.and.a/=','.and.ichar(a)/=9) then
 !
 ! start of a number
 !
@@ -1716,13 +1716,13 @@
 !
                do
                   i=i+1
-                  if(i.ge.l) exit
+                  if(i>=l) exit
                   a=parmid(i:i)
-                  if(a.eq.' '.or.a.eq.','.or.ichar(a).eq.9) exit
+                  if(a==' '.or.a==','.or.ichar(a)==9) exit
                enddo
             endif
             i=i+1
-            if(i.ge.l) exit
+            if(i>=l) exit
          enddo
          end subroutine numberinstring
 !
@@ -1741,7 +1741,7 @@
          numrec=0
          do
             read(iunit,"(a)",advance="no",err=100,eor=100) a
-            if(a.ne.' '.and.a.ne.','.and.ichar(a).ne.9) then
+            if(a/=' '.and.a/=','.and.ichar(a)/=9) then
 !
 ! start of a number
 !
@@ -1751,13 +1751,13 @@
 !
                do
                   read(iunit,"(a)",advance="no",err=100,eor=100) a
-                  if(a.eq.' '.or.a.eq.','.or.ichar(a).eq.9) exit
+                  if(a==' '.or.a==','.or.ichar(a)==9) exit
                enddo
             endif
          enddo
-100      if(parmid.eq.'rewind') then
+100      if(parmid=='rewind') then
             rewind(iunit)
-         elseif(parmid.eq.'backspace') then
+         elseif(parmid=='backspace') then
             backspace(iunit)
          else
             backspace(iunit)
@@ -1765,7 +1765,7 @@
             backspace(iunit)
             do
                read(iunit,'(a10)') rec
-               if(rec.eq.parmid(1:10)) exit
+               if(rec==parmid(1:10)) exit
             enddo
          endif
          end subroutine numberinrecord
@@ -1846,10 +1846,10 @@
 ! this is a specific case for fixed orientation, internal field calculation, in situations
 ! where the solution is unaltered from the first run
 !
-               if((varmultiparmid.eq.'near_field_plane_position' &
-                .or.varmultiparmid.eq.'polarization_angle_deg' &
-                .or.varmultiparmid.eq.'near_field_plane_vertices') &
-                .and.runnum.gt.1.and.(.not.switchloop)) then
+               if((varmultiparmid=='near_field_plane_position' &
+                .or.varmultiparmid=='polarization_angle_deg' &
+                .or.varmultiparmid=='near_field_plane_vertices') &
+                .and.runnum>1.and.(.not.switchloop)) then
                   fixedorrandom=3
                else
                   fixedorrandom=0
@@ -1860,8 +1860,8 @@
                   multivar(i,1:nummultivars(i))=multivar(i,1:nummultivars(i))+multistep(i,1:nummultivars(i))
                   loopdone=.true.
                   do j=1,nummultivars(i)
-                     if(multistep(i,j).ne.0.d0) then
-                        if(abs(multivar(i,j)-multivar1(i,j)).le.abs(multivar2(i,j)-multivar1(i,j))) then
+                     if(multistep(i,j)/=0.d0) then
+                        if(abs(multivar(i,j)-multivar1(i,j))<=abs(multivar2(i,j)-multivar1(i,j))) then
                            loopdone=.false.
                         endif
                      endif
@@ -1888,12 +1888,12 @@
 !  find the run_num-1 occurence of new_run, and position the input file to
 !  the next line.
 !
-               if(runnum.gt.1) then
+               if(runnum>1) then
                   parmid='new_run'
                   nsphere=numberspheres
                   call setfileposition(1,parmid,runnum-1)
-                  if(parmid.eq.'error') then
-                     if(rank.eq.0) then
+                  if(parmid=='error') then
+                     if(rank==0) then
                         write(runprintunit,'('' error finding data for run '',&
                         & i5)') runnum
                      endif
@@ -1907,40 +1907,40 @@
             do
                read(1,'(a)',end=10) parmid
                parmid=parmid(:index(parmid,' '))
-               if(parmid.eq.'number_spheres') then
+               if(parmid=='number_spheres') then
                   read(1,*) ftemp
                   numberspheres=nint(ftemp)
                   nsphere=numberspheres
                   cycle
                endif
-               if(parmid.eq.'sphere_position_file') then
+               if(parmid=='sphere_position_file') then
                   read(1,'(a)') positionfile
                   positionfile=positionfile(:index(positionfile,' '))
-                  if(positionfile.eq.'at_bottom') positionfile=' '
-                  if(positionfile.ne.' ') then
+                  if(positionfile=='at_bottom') positionfile=' '
+                  if(positionfile/=' ') then
                      posfilepres=.true.
                   endif
                   cycle
                endif
-               if(parmid.eq.'output_file') then
+               if(parmid=='output_file') then
                   read(1,'(a)') outputfile
                   outputfile=outputfile(:index(outputfile,' '))
-                  if(outputfile.eq.' ') then
+                  if(outputfile==' ') then
                      outputfile='mstm_default_out.dat'
                   endif
                   newoutfile=.true.
                   cycle
                endif
-               if(parmid.eq.'run_print_file') then
+               if(parmid=='run_print_file') then
                   read(1,'(a)') printfile
                   printfile=printfile(:index(printfile,' '))
-                  if(printdata.eq.1) then
-                     if((printfile.eq.' '.or.printfile.eq.'console')) then
+                  if(printdata==1) then
+                     if((printfile==' '.or.printfile=='console')) then
                         printfile=' '
                         runprintunit=6
                      else
                         runprintunit=4
-                        if(rank.eq.0) then
+                        if(rank==0) then
                            open(runprintunit,file=printfile)
                         endif
                      endif
@@ -1949,181 +1949,181 @@
                   endif
                   cycle
                endif
-               if(parmid.eq.'append_output_file') then
+               if(parmid=='append_output_file') then
                   read(1,*) appendfile
                   cycle
                endif
-               if(parmid.eq.'write_sphere_data') then
+               if(parmid=='write_sphere_data') then
                   read(1,*) writespheredata
                   cycle
                endif
-               if(parmid.eq.'length_scale_factor') then
+               if(parmid=='length_scale_factor') then
                   read(1,*) lengthscalefactor
                   cycle
                endif
-               if(parmid.eq.'real_ref_index_scale_factor') then
+               if(parmid=='real_ref_index_scale_factor') then
                   read(1,*) realriscalefactor
                   cycle
                endif
-               if(parmid.eq.'imag_ref_index_scale_factor') then
+               if(parmid=='imag_ref_index_scale_factor') then
                   read(1,*) imriscalefactor
                   cycle
                endif
-               if(parmid.eq.'medium_real_ref_index') then
+               if(parmid=='medium_real_ref_index') then
                   read(1,*) realrimedium
                   cycle
                endif
-               if(parmid.eq.'medium_imag_ref_index') then
+               if(parmid=='medium_imag_ref_index') then
                   read(1,*) imagrimedium
                   cycle
                endif
-               if(parmid.eq.'medium_real_chiral_factor') then
+               if(parmid=='medium_real_chiral_factor') then
                   read(1,*) realchiralfactormedium
                   cycle
                endif
-               if(parmid.eq.'medium_imag_chiral_factor') then
+               if(parmid=='medium_imag_chiral_factor') then
                   read(1,*) imagchiralfactormedium
                   cycle
                endif
-               if(parmid.eq.'real_chiral_factor') then
+               if(parmid=='real_chiral_factor') then
                   read(1,*) realchiralfactor
                   cycle
                endif
-               if(parmid.eq.'imag_chiral_factor') then
+               if(parmid=='imag_chiral_factor') then
                   read(1,*) imchiralfactor
                   cycle
                endif
-               if(parmid.eq.'target_euler_angles_deg') then
+               if(parmid=='target_euler_angles_deg') then
                   read(1,*) eulerdeg
                   cycle
                endif
-               if(parmid.eq.'mie_epsilon') then
+               if(parmid=='mie_epsilon') then
                   read(1,*) epsmie
                   cycle
                endif
-               if(parmid.eq.'translation_epsilon') then
+               if(parmid=='translation_epsilon') then
                   read(1,*) epstran
                   cycle
                endif
-               if(parmid.eq.'solution_epsilon') then
+               if(parmid=='solution_epsilon') then
                   read(1,*) epssoln
                   cycle
                endif
-               if(parmid.eq.'max_number_iterations') then
+               if(parmid=='max_number_iterations') then
                   read(1,*) numberiterations
                   cycle
                endif
-               if(parmid.eq.'max_memory_per_processor') then
+               if(parmid=='max_memory_per_processor') then
                   read(1,*) maxmemperproc
                   cycle
                endif
-               if(parmid.eq.'store_translation_matrix') then
+               if(parmid=='store_translation_matrix') then
                   read(1,*) storetranmat
                   cycle
                endif
-               if(parmid.eq.'near_field_distance') then
+               if(parmid=='near_field_distance') then
                   read(1,*) nfdistance
                   cycle
                endif
-               if(parmid.eq.'iterations_per_correction') then
+               if(parmid=='iterations_per_correction') then
                   read(1,*) niterstep
                   cycle
                endif
-               if(parmid.eq.'sm_number_processors') then
+               if(parmid=='sm_number_processors') then
                   read(1,*) smnumberprocessors
                   cycle
                endif
-               if(parmid.eq.'fixed_or_random_orientation') then
+               if(parmid=='fixed_or_random_orientation') then
                   read(1,*) fixedorrandom
                   cycle
                endif
-               if(parmid.eq.'incident_or_target_frame') then
+               if(parmid=='incident_or_target_frame') then
                   read(1,*) incidentortargetframe
                   cycle
                endif
-               if(parmid.eq.'scattering_angle_file') then
+               if(parmid=='scattering_angle_file') then
                   read(1,'(a)') scatteringanglefile
                   scatteringanglefile=scatteringanglefile(:index(scatteringanglefile,' '))
                   cycle
                endif
-               if(parmid.eq.'scattering_plane_angle_deg') then
+               if(parmid=='scattering_plane_angle_deg') then
                   read(1,*) phideg
                   phimindeg=phideg
                   phimaxdeg=phideg
                   cycle
                endif
-               if(parmid.eq.'min_scattering_angle_deg') then
+               if(parmid=='min_scattering_angle_deg') then
                   read(1,*) thetamindeg
                   cycle
                endif
-               if(parmid.eq.'max_scattering_angle_deg') then
+               if(parmid=='max_scattering_angle_deg') then
                   read(1,*) thetamaxdeg
                   cycle
                endif
-               if(parmid.eq.'min_scattering_plane_angle_deg') then
+               if(parmid=='min_scattering_plane_angle_deg') then
                   read(1,*) phimindeg
                   cycle
                endif
-               if(parmid.eq.'max_scattering_plane_angle_deg') then
+               if(parmid=='max_scattering_plane_angle_deg') then
                   read(1,*) phimaxdeg
                   cycle
                endif
-               if(parmid.eq.'number_scattering_angles') then
+               if(parmid=='number_scattering_angles') then
                   read(1,*) numbertheta0
                   numbertheta=numbertheta0
                   deltathetaspec=.false.
                   cycle
                endif
-               if(parmid.eq.'delta_scattering_angle_deg') then
+               if(parmid=='delta_scattering_angle_deg') then
                   read(1,*) deltathetadeg
                   deltathetaspec=.true.
                   cycle
                endif
-               if(parmid.eq.'normalize_scattering_matrix') then
+               if(parmid=='normalize_scattering_matrix') then
                   read(1,*) normalizesm
                   cycle
                endif
-               if(parmid.eq.'azimuth_average_scattering_matrix') then
+               if(parmid=='azimuth_average_scattering_matrix') then
                   read(1,*) azimuthaverage
                   cycle
                endif
-               if(parmid.eq.'incident_azimuth_angle_deg') then
+               if(parmid=='incident_azimuth_angle_deg') then
                   read(1,*) alphadeg
                   cycle
                endif
-               if(parmid.eq.'incident_polar_angle_deg') then
+               if(parmid=='incident_polar_angle_deg') then
                   read(1,*) betadeg
                   cycle
                endif
-               if(parmid.eq.'calculate_scattering_coefficients') then
+               if(parmid=='calculate_scattering_coefficients') then
                   read(1,*) calcamn
                   cycle
                endif
-               if(parmid.eq.'scattering_coefficient_file') then
+               if(parmid=='scattering_coefficient_file') then
                   read(1,'(a)') amnfile
                   amnfile=amnfile(:index(amnfile,' '))
                   newafile=.true.
                   cycle
                endif
-               if(parmid.eq.'track_iterations') then
+               if(parmid=='track_iterations') then
                   read(1,*) trackiterations
                   cycle
                endif
-               if(parmid.eq.'calculate_near_field') then
+               if(parmid=='calculate_near_field') then
                   read(1,*) calcnf
                   cycle
                endif
-               if(parmid.eq.'near_field_plane_coord') then
+               if(parmid=='near_field_plane_coord') then
                   read(1,*) nfplane
                   cycle
                endif
-               if(parmid.eq.'near_field_plane_position') then
+               if(parmid=='near_field_plane_position') then
                   read(1,*) nfplanepos
                   cycle
                endif
-               if(parmid.eq.'near_field_plane_vertices') then
+               if(parmid=='near_field_plane_vertices') then
                   call numberinrecord(1,parmid,i)
-                  if(i.eq.2) then
+                  if(i==2) then
                      read(1,*) nfpad
                      autonfplanevert=.true.
                   else
@@ -2132,17 +2132,17 @@
                   endif
                   cycle
                endif
-               if(parmid.eq.'spacial_step_size') then
+               if(parmid=='spacial_step_size') then
                   read(1,*) deltax
                   cycle
                endif
-               if(parmid.eq.'polarization_angle_deg') then
+               if(parmid=='polarization_angle_deg') then
                   read(1,*) gammadeg
                   cycle
                endif
-               if(parmid.eq.'near_field_output_file') then
+               if(parmid=='near_field_output_file') then
                   read(1,'(a)') nfoutputfile
-                  if(nfoutputfile.eq.' ') then
+                  if(nfoutputfile==' ') then
                      nfoutputfile='mstm_nf_default_out.dat'
                   else
                      nfoutputfile=nfoutputfile(:index(nfoutputfile,' '))
@@ -2150,55 +2150,55 @@
                   newnffile=.true.
                   cycle
                endif
-               if(parmid.eq.'near_field_output_data') then
+               if(parmid=='near_field_output_data') then
                   read(1,*) nfoutdata
                   cycle
                endif
-               if(parmid.eq.'plane_wave_epsilon') then
+               if(parmid=='plane_wave_epsilon') then
                   read(1,*) epspw
                   cycle
                endif
-               if(parmid.eq.'gaussian_beam_constant') then
+               if(parmid=='gaussian_beam_constant') then
                   read(1,*) cgaussbeam
                   cycle
                endif
-               if(parmid.eq.'gaussian_beam_focal_point') then
+               if(parmid=='gaussian_beam_focal_point') then
                   read(1,*) gaussbeamfocus0(1),gaussbeamfocus0(2), &
                             gaussbeamfocus0(3)
                   cycle
                endif
-               if(parmid.eq.'t_matrix_convergence_epsilon') then
+               if(parmid=='t_matrix_convergence_epsilon') then
                   read(1,*) epstcon
                   cycle
                endif
-               if(parmid.eq.'calculate_t_matrix') then
+               if(parmid=='calculate_t_matrix') then
                   read(1,*) calctmatrix
                   cycle
                endif
-               if(parmid.eq.'infinite_medium') then
+               if(parmid=='infinite_medium') then
                   read(1,*) infinitemedium
                   cycle
                endif
-               if(parmid.eq.'excited_sphere') then
+               if(parmid=='excited_sphere') then
                   read(1,*) excitedsphere
                   cycle
                endif
-               if(parmid.eq.'sm_number_processors') then
+               if(parmid=='sm_number_processors') then
                   read(1,*) smnumberprocessors
                   cycle
                endif
-               if(parmid.eq.'t_matrix_file') then
+               if(parmid=='t_matrix_file') then
                   read(1,'(a)') tmatrixfile
-                  if(tmatrixfile.eq.' ') then
+                  if(tmatrixfile==' ') then
                      tmatrixfile='tmatrix-temp.dat'
                   else
                      tmatrixfile=tmatrixfile(:index(tmatrixfile,' '))
                   endif
                   cycle
                endif
-               if(parmid.eq.'sphere_sizes_and_positions') then
+               if(parmid=='sphere_sizes_and_positions') then
                   if(posfilepres) then
-                     if(rank.eq.0) then
+                     if(rank==0) then
                         write(runprintunit,'('' error: cannot specify both '', &
                         &'' sphere_sizes_and_positions and sphere_position_file'')')
                      endif
@@ -2211,19 +2211,19 @@
                   posfilenumber=posfilenumber+1
                   cycle
                endif
-               if(parmid.eq.'new_run') then
+               if(parmid=='new_run') then
                   moreruns=.true.
                   if(multirun) then
                      endparmid=parmid
                   endif
                   exit
                endif
-               if(parmid.eq.'end_of_options') then
+               if(parmid=='end_of_options') then
                   moreruns=.false.
                   endparmid=parmid
                   exit
                endif
-               if(parmid.eq.'multiple_run') then
+               if(parmid=='multiple_run') then
                   nummultiloops=nummultiloops+1
                   multirun=.true.
                   moreruns=.true.
@@ -2241,24 +2241,24 @@
                   repeatread=.true.
                   cycle
                endif
-               if(parmid.eq.'nested_multiple_run') then
+               if(parmid=='nested_multiple_run') then
                   read(1,*) nestedmultiplerun
-                  if(nestedmultiplerun.eq.1) then
+                  if(nestedmultiplerun==1) then
                      nestedloop=.true.
                   else
                      nestedloop=.false.
                   endif
                   cycle
                endif
-               if(parmid.eq.'begin_comment') then
+               if(parmid=='begin_comment') then
                   numbercommentlines=0
-                  do while(parmid.ne.'end_comment')
+                  do while(parmid/='end_comment')
                      numbercommentlines=numbercommentlines+1
                      read(1,'(a)',end=10) parmid
                      parmid=parmid(:index(parmid,' '))
                   enddo
                   numbercommentlines=numbercommentlines-1
-                  if(numbercommentlines.gt.0.and.rank.eq.0) then
+                  if(numbercommentlines>0.and.rank==0) then
                      if(allocated(commentline)) deallocate(commentline)
                      allocate(commentline(numbercommentlines))
                      do i=1,numbercommentlines+1
@@ -2288,15 +2288,15 @@
 !
 !  automatically append output file for multiple runs
 !
-         if((.not.newoutfile).and.runnum.gt.1) then
+         if((.not.newoutfile).and.runnum>1) then
             appendfile=1
          endif
-         if((.not.newafile).and.runnum.gt.1) then
+         if((.not.newafile).and.runnum>1) then
             appendafile=1
          else
             appendafile=0
          endif
-         if((.not.newnffile).and.runnum.gt.1) then
+         if((.not.newnffile).and.runnum>1) then
             appendnffile=1
          else
             appendnffile=0
@@ -2323,12 +2323,12 @@
 ! positions are store in module variable rpos
 !
             call readpositions(iunit,nsphere)
-            if(nsphere.eq.numberspheres) then
+            if(nsphere==numberspheres) then
                close(iunit)
                exit
             endif
             numberspheres=nsphere
-            if(rank.eq.0) then
+            if(rank==0) then
                write(runprintunit,'('' insufficient points in position file. '',&
                &'' nsphere changed to '',i6)') numberspheres
             endif
@@ -2357,14 +2357,14 @@
             do j=i+1,nsphere
                xij=rpos(:,i)-rpos(:,j)
                rij=sqrt(dot_product(xij,xij))
-               if((rij.lt.xsp(i)+xsp(j)-0.0001d0).and.(rij.gt.abs(xsp(i)-xsp(j))+0.0001d0)) then
-                  if(rank.eq.0) then
+               if((rij<xsp(i)+xsp(j)-0.0001d0).and.(rij>abs(xsp(i)-xsp(j))+0.0001d0)) then
+                  if(rank==0) then
                      write(runprintunit,'('' warning: spheres '',i4,'' and '',&
                         & i4 '' overlap. '',&
                         & '' scaled distance:'' f8.4)') i,j,rij/(xsp(i)+xsp(j))
                   endif
                endif
-               if(hostsphere(i).eq.hostsphere(j)) then
+               if(hostsphere(i)==hostsphere(j)) then
                   rijmax=max(rijmax,rij)
                endif
             enddo
@@ -2376,7 +2376,7 @@
          nextsphere=0
          xvsp=0.d0
          do i=1,nsphere
-            if(hostsphere(i).eq.0) then
+            if(hostsphere(i)==0) then
                rposmean=rposmean+rpos(:,i)
                nextsphere=nextsphere+1
                xvsp=xvsp+xsp(i)**3.d0
@@ -2394,7 +2394,7 @@
             rtoi=sqrt(dot_product(rpos(1:3,i)-rposmean(1:3), &
                    rpos(1:3,i)-rposmean(1:3)))+xsp(i)
             rpos(1:3,i)=rpos(1:3,i)-gaussbeamfocus(1:3)
-            if(rtoi.gt.rmax) then
+            if(rtoi>rmax) then
                rmax=rtoi
                imax=i
             endif
@@ -2410,7 +2410,7 @@
 !
          ribulk=dcmplx(realrimedium,imagrimedium)
          beta=dcmplx(realchiralfactormedium,imagchiralfactormedium)
-         if(beta.eq.(0.d0,0.d0)) then
+         if(beta==(0.d0,0.d0)) then
             ri(1,0)=ribulk
             ri(2,0)=ribulk
          else
@@ -2421,7 +2421,7 @@
 !
 !  coordinate rotation option
 !
-         if(eulerdeg(1).ne.0.d0.or.eulerdeg(2).ne.0.d0.or.eulerdeg(3).ne.0.d0) then
+         if(eulerdeg(1)/=0.d0.or.eulerdeg(2)/=0.d0.or.eulerdeg(3)/=0.d0) then
             euler=4.d0*datan(1.d0)/180.d0*eulerdeg
             do i=1,nsphere
                call eulerrotation(rpos(:,i),euler,1,rpos(:,i))
@@ -2430,20 +2430,20 @@
 !
 ! scattering angle array determination: new in march 2013
 !
-         if(scatteringanglefile.ne.' ') then
+         if(scatteringanglefile/=' ') then
 !
 ! if file is present, check number of points
 !
             open(1,file=scatteringanglefile)
             i=0
             j=0
-            do while(j.eq.0)
+            do while(j==0)
                i=i+1
                read(1,*,iostat=j) ftemp,ftemp
             enddo
             close(1)
             numbertheta=min(i-1,numbertheta0)
-            if(rank.eq.0) then
+            if(rank==0) then
                write(runprintunit,'('' number of angles in file:'',i10)') numbertheta
                call flush(runprintunit)
             endif
@@ -2451,7 +2451,7 @@
 !
 ! determine the number of points for automatic selection
 !
-            if(azimuthaverage.eq.1.or.fixedorrandom.eq.1) then
+            if(azimuthaverage==1.or.fixedorrandom==1) then
                phimindeg=0.d0
                phimaxdeg=0.d0
             endif
@@ -2470,7 +2470,7 @@
          endif
          if(allocated(scatteringanglearray)) deallocate(scatteringanglearray)
          allocate(scatteringanglearray(2,numbertheta))
-         if(scatteringanglefile.ne.' ') then
+         if(scatteringanglefile/=' ') then
             open(1,file=scatteringanglefile)
             do i=1,numbertheta
                read(1,*) scatteringanglearray(1:2,i)
@@ -2499,10 +2499,10 @@
                rposmax=max(rposmax,rpos0(:,i)+xsp(i))
                rposmin=min(rposmin,rpos0(:,i)-xsp(i))
             enddo
-            if(nfplane.eq.1) then
+            if(nfplane==1) then
                i=2
                j=3
-            elseif(nfplane.eq.2) then
+            elseif(nfplane==2) then
                i=3
                j=1
             else
@@ -2515,11 +2515,11 @@
 !
 !  write run data to run file and output file
 !
-         if(printdata.eq.1.and.rank.eq.0) then
+         if(printdata==1.and.rank==0) then
             call writerundata(runprintunit,input_file=inputfile, &
                  run_num=runnum)
             call flush(runprintunit)
-            if(appendfile.eq.0) then
+            if(appendfile==0) then
                open(1,file=outputfile,status='replace',action='write')
             else
                open(1,file=outputfile,position='append')
@@ -2545,10 +2545,10 @@
          do i=1,nsphere_t
             xspmin=1.d6
             do j=1,nsphere_t
-               if(xsp_t(j).gt.xsp_t(i)) then
+               if(xsp_t(j)>xsp_t(i)) then
                   xij(:)=rpos_t(:,j)-rpos_t(:,i)
                   rij=sqrt(dot_product(xij,xij))
-                  if(rij.le.xsp_t(j)-xsp_t(i).and.xsp_t(j).lt.xspmin) then
+                  if(rij<=xsp_t(j)-xsp_t(i).and.xsp_t(j)<xspmin) then
                      hostsphere_t(i)=j
                      xspmin=xsp_t(j)
                   endif
@@ -2571,7 +2571,7 @@
          integer, optional :: run_num
          character*30, optional :: input_file
          character*1 :: lf
-         if(iunit.ne.1) then
+         if(iunit/=1) then
             lf = ' '
          else
             lf = '/'
@@ -2582,19 +2582,19 @@
          else
             runnum=1
          endif
-         if(present(input_file).and.runnum.eq.1) then
+         if(present(input_file).and.runnum==1) then
             write(iunit, '('' input file is '' '//lf//',a)') input_file
          endif
-         if(runnum.gt.1) then
+         if(runnum>1) then
             write(iunit,'('' *****************************************************'')')
          endif
-         if(numbercommentlines.gt.0) then
+         if(numbercommentlines>0) then
             write(iunit,'('' input file comments follow:'')')
             do i=1,numbercommentlines
                write(iunit,'(a)') trim(commentline(i))
             enddo
          endif
-         if(runnum.eq.1) then
+         if(runnum==1) then
             write(iunit,'('' number of processors:'' '//lf//',i4)') numprocs
          endif
          write(iunit,'('' input parameters for run number '' '//lf//',i5)') runnum
@@ -2606,23 +2606,23 @@
                       realriscalefactor,imriscalefactor
          write(iunit,'('' chiral factors:'' '//lf//',2e13.5)')  &
                       realchiralfactor,imchiralfactor
-         if(incidentortargetframe.eq.0) then
+         if(incidentortargetframe==0) then
             write(iunit,'('' scattering matrix directions based on incident frame'')')
          else
             write(iunit,'('' scattering matrix directions based on target frame'')')
          endif
-         if(scatteringanglefile.eq.' ') then
+         if(scatteringanglefile==' ') then
             write(iunit,'('' automatic scattering angle calculation'')')
             write(iunit,'('' thetamin, thetamax:'' '//lf//',2f9.1)') &
                         thetamindeg,thetamaxdeg
-            if(fixedorrandom.eq.0.and.azimuthaverage.eq.0) then
+            if(fixedorrandom==0.and.azimuthaverage==0) then
                write(iunit,'('' phimin, phimax:'' '//lf//',2f9.1)') &
                         phimindeg,phimaxdeg
             endif
          else
             write(iunit,'('' scattering angle file:'' '//lf//',a)') scatteringanglefile
          endif
-         if(fixedorrandom.eq.0.and.azimuthaverage.eq.1) then
+         if(fixedorrandom==0.and.azimuthaverage==1) then
             write(iunit,'('' scattering matrix is averaged over azimuthal angle'')')
          endif
          write(iunit,'('' number scattering angles:'' '//lf//',i9)') numbertheta
@@ -2632,26 +2632,26 @@
          write(iunit,'('' target euler rotation angles:'' '//lf//',3f10.4)') eulerdeg
          write(iunit,'('' far field kr, iterations/correction:'' '//lf//',e12.4,i5)') &
                  nfdistance,niterstep
-         if(cgaussbeam.ne.0.d0) then
+         if(cgaussbeam/=0.d0) then
             write(iunit,'('' gaussian incident beam: 1/width:'' '//lf//',f9.4,)') cgaussbeam
             write(iunit,'('' beam focal point:'' '//lf//',3f9.3,)') gaussbeamfocus
          else
             write(iunit,'('' plane wave incidence'')')
          endif
-         if(fixedorrandom.ne.1) then
+         if(fixedorrandom/=1) then
             write(iunit,'('' fixed orientation calculations'')')
             write(iunit,'('' incident azimuth and polar angles:'' '//lf//',2f10.3)') &
                     alphadeg,betadeg
-            if(scatteringanglefile.ne.' ') then
+            if(scatteringanglefile/=' ') then
                write(iunit,'('' scattering plane angle:'' '//lf//',f10.3)') &
                     phideg
             endif
             write(iunit,'('' common expansion epsilon:'' '//lf//',e12.4)') epstran
-            if(fixedorrandom.eq.0) then
-               if(calcamn.eq.0) then
+            if(fixedorrandom==0) then
+               if(calcamn==0) then
                   write(iunit,'('' scattering coefficients read from file '' '//lf//',a)') amnfile
                else
-                  if(amnfile.ne.' ') then
+                  if(amnfile/=' ') then
                      write(iunit,'('' scattering coefficients calculated, stored in file '' '//lf//',a)')&
                          amnfile
                   else
@@ -2661,8 +2661,8 @@
             else
                write(iunit,'('' scattering coefficients same as previous run'')')
             endif
-            if(calcnf.eq.1) then
-               if(appendnffile.eq.0) then
+            if(calcnf==1) then
+               if(appendnffile==0) then
                   write(iunit,'('' near field calculated, stored in file '' '//lf//',a)') nfoutputfile
                else
                   write(iunit,'('' near field calculated, appended to file '' '//lf//',a)') nfoutputfile
@@ -2676,12 +2676,12 @@
             endif
          else
             write(iunit,'('' random orientation calculations'')')
-            if(calctmatrix.eq.0) then
+            if(calctmatrix==0) then
                write(iunit,'('' t matrix read from file '' '//lf//',a)') tmatrixfile
-            elseif(calctmatrix.eq.1) then
+            elseif(calctmatrix==1) then
                write(iunit,'('' t matrix calculated, stored in file '' '//lf//',a)') tmatrixfile
                write(iunit,'('' t matrix convergence epsilon:'' '//lf//',e12.4)') epstcon
-               if(excitedsphere.eq.0) then
+               if(excitedsphere==0) then
                   write(iunit,'('' all spheres excited (total T matrix) '')')
                else
                   write(iunit,'('' T(i) calculated for sphere:'' '//lf//',i5)') excitedsphere
@@ -2689,13 +2689,13 @@
             else
                write(iunit,'('' t matrix calculated from end of file '' '//lf//',a)') tmatrixfile
                write(iunit,'('' t matrix convergence epsilon:'' '//lf//',e12.4)') epstcon
-               if(excitedsphere.eq.0) then
+               if(excitedsphere==0) then
                   write(iunit,'('' all spheres excited (total T matrix) '')')
                else
                   write(iunit,'('' T(i) calculated for sphere:'' '//lf//',i5)') excitedsphere
                endif
             endif
-            if(infinitemedium.eq.1) then
+            if(infinitemedium==1) then
                write(iunit,'('' infinite medium correction applied '')')
             endif
          endif
@@ -3036,9 +3036,9 @@
             do i=1,nsphere
                tmtemp=tmatrix_file(i)
                tmtemp=tmtemp(:index(tmtemp,' '))
-               if(tmtemp.ne.' ') then
-                  if(numberfieldexp(i).eq.2) then
-                     if(rank.eq.0) then
+               if(tmtemp/=' ') then
+                  if(numberfieldexp(i)==2) then
+                     if(rank==0) then
                         write(iunit,'('' error: sphere '',i5,'' with TM file option '', &
                       &''cannot have inclusions'')') i
                      endif
@@ -3048,13 +3048,13 @@
                   newtm=.true.
                   do j=1,i-1
                      if(tm_on_file(j).and. &
-                        (tmatrix_file(j).eq.tmatrix_file(i))) then
+                        (tmatrix_file(j)==tmatrix_file(i))) then
                         newtm=.false.
                         exit
                      endif
                   enddo
                   if(newtm) then
-                     if(rank.eq.0) then
+                     if(rank==0) then
                         open(3,file=tmtemp)
                         read(3,*) n,nodrn,n
                         close(3)
@@ -3075,7 +3075,7 @@
                   mie_number_field_expansions(i)=1
                endif
             enddo
-            if(sizetmstore.gt.0) then
+            if(sizetmstore>0) then
                if(allocated(stored_tm)) deallocate(stored_tm)
                allocate(stored_tm(sizetmstore))
             endif
@@ -3094,7 +3094,7 @@
          enddo
          do i=1,nsphere
             j=hostsphere(i)
-            do while(j.ne.0)
+            do while(j/=0)
                mie_order(j)=max(mie_order(j),mie_order(i))
                j=hostsphere(j)
             enddo
@@ -3104,7 +3104,7 @@
 !
          do i=1,nsphere
             rihost=ri(:,hostsphere(i))
-            if(ri(1,i).eq.ri(2,i)) then
+            if(ri(1,i)==ri(2,i)) then
                is_optically_active(i)=.false.
             else
                is_optically_active(i)=.true.
@@ -3116,7 +3116,7 @@
                newtm=.true.
                do j=1,i-1
                   if(tm_on_file(j).and. &
-                     (tmatrix_file(j).eq.tmatrix_file(i))) then
+                     (tmatrix_file(j)==tmatrix_file(i))) then
                      newtm=.false.
                      exit
                   endif
@@ -3196,12 +3196,12 @@
          character :: tmfile*60
          call mstm_mpi(mpi_command='rank',mpi_rank=rank)
          call mstm_mpi(mpi_command='size',mpi_size=numprocs)
-         if(rank.eq.0) then
+         if(rank==0) then
             open(3,file=tmfile)
             read(3,*) m,nodrt,n
             read(3,*) nspheret,fc(1)
          endif
-         if(numprocs.gt.1) then
+         if(numprocs>1) then
             tint(1)=nodrt
             call mstm_mpi(mpi_command='bcast',mpi_send_buf_i=tint, &
               mpi_number=1,mpi_rank=0)
@@ -3209,7 +3209,7 @@
          endif
          nblkt=nodrt*(nodrt+2)
          sizetm=4*nblkt*nblkt
-         if(rank.eq.0) then
+         if(rank==0) then
             allocate(tc(2,nblkt,2,nblkt), &
                tct(0:nodrt+1,nodrt,2,0:nodrt+1,nodrt,2))
             tc=(0.,0.)
@@ -3227,7 +3227,7 @@
                            read(3,*) nt,mt,fc
                            tc(1,mn,q,kl)=cmplx(fc(1),fc(2))
                            tc(2,mn,q,kl)=cmplx(fc(3),fc(4))
-                           if(n.lt.l) then
+                           if(n<l) then
                               ikm=(-1)**(m+k)
                               do p=1,2
                                  tc(q,klm,p,mnm)=tc(p,mn,q,kl)*ikm
@@ -3247,7 +3247,7 @@
             do n=1,nodrt
                do m=-n,n
                   mn=n*(n+1)+m
-                  if(m.ge.0) then
+                  if(m>=0) then
                      ma=m
                      na=n
                   else
@@ -3265,7 +3265,7 @@
                               qsca=qsca+tc(p,mn,q,kl)*conjg(tc(p,mn,q,kl))
                            enddo
                         enddo
-                        if(k.ge.0) then
+                        if(k>=0) then
                            ka=k
                            la=l
                         else
@@ -3283,7 +3283,7 @@
             stored_tm(tm_offset(sphere)+1:tm_offset(sphere)+sizetm) &
               = reshape(tct,(/sizetm/))
          endif
-         if(numprocs.gt.1) then
+         if(numprocs>1) then
             fc(1)=qext
             fc(2)=qsca
             call mstm_mpi(mpi_command='bcast',mpi_send_buf_dp=fc(1), &
@@ -3338,9 +3338,9 @@
          rii(:,2)=ri
          ribulk(:)=2.d0/(1.d0/rii(1,:)+1.d0/rii(2,:))
          xri=x*rii
-         if(qeps.gt.0.) then
+         if(qeps>0.) then
             nstop=nint(x+4.*x**(1./3.))+5.
-         elseif(qeps.lt.0.) then
+         elseif(qeps<0.) then
             nstop=ceiling(-qeps)
             nodr0=nstop
          else
@@ -3420,13 +3420,13 @@
             qext=qext+qext1(n)
          enddo
 
-         if(qeps.gt.0.d0) then
+         if(qeps>0.d0) then
             qextt=qext
             qext=0.
             do n=1,nstop
                qext=qext+qext1(n)
                err=abs(1.d0-qext/qextt)
-               if(err.lt.qeps.or.n.eq.nstop) exit
+               if(err<qeps.or.n==nstop) exit
             enddo
             nodr0=n
          endif
@@ -3539,15 +3539,15 @@
          n1=mie_offset(i)+1
          n2=mie_offset(i)+nterms
          allocate(an1(2,2,nodr))
-         if(miecoefficient.eq.'a') then
+         if(miecoefficient=='a') then
             an1=reshape(an_mie(n1:n2),(/2,2,nodr/))
-         elseif(miecoefficient.eq.'c') then
+         elseif(miecoefficient=='c') then
             an1=reshape(cn_mie(n1:n2),(/2,2,nodr/))
-         elseif(miecoefficient.eq.'d') then
+         elseif(miecoefficient=='d') then
             an1=reshape(dn_mie(n1:n2),(/2,2,nodr/))
-         elseif(miecoefficient.eq.'u') then
+         elseif(miecoefficient=='u') then
             an1=reshape(un_mie(n1:n2),(/2,2,nodr/))
-         elseif(miecoefficient.eq.'v') then
+         elseif(miecoefficient=='v') then
             an1=reshape(vn_mie(n1:n2),(/2,2,nodr/))
          endif
          do n=1,nodr
@@ -3599,9 +3599,9 @@
                do j=1,nrhs
                   b12=b11+nblki-1
                   b22=b21+nblki-1
-                  if(rhslist(j).and.idir.eq.1) then
+                  if(rhslist(j).and.idir==1) then
                      aout(b11:b12)=matmul(tmtemp,ain_t(b21:b22))
-                  elseif(rhslist(j).and.idir.ne.1) then
+                  elseif(rhslist(j).and.idir/=1) then
                      aout(b11:b12)=matmul(ain_t(b21:b22),tmtemp)
                   endif
                   b11=b11+nblki
@@ -3617,10 +3617,10 @@
                n1=mie_offset(i)+1
                n2=mie_offset(i)+nterms
                an1=reshape(an_mie(n1:n2),(/2,2,nodri/))
-               if(mie_number_field_expansions(i).eq.1) then
+               if(mie_number_field_expansions(i)==1) then
                   aout_t=0.d0
                   do j=1,nrhs
-                     if(rhslist(j).and.idir.eq.1) then
+                     if(rhslist(j).and.idir==1) then
                         do n=1,nodri
                            do p=1,2
                               do q=1,2
@@ -3631,7 +3631,7 @@
                               enddo
                            enddo
                         enddo
-                     elseif(rhslist(j).and.idir.ne.1) then
+                     elseif(rhslist(j).and.idir/=1) then
                         do n=1,nodri
                            do p=1,2
                               do q=1,2
@@ -3659,7 +3659,7 @@
                   aout_t=0.d0
                   fout_t=0.d0
                   do j=1,nrhs
-                     if(rhslist(j).and.idir.eq.1) then
+                     if(rhslist(j).and.idir==1) then
                         do n=1,nodri
                            do p=1,2
                               do q=1,2
@@ -3678,7 +3678,7 @@
                               enddo
                            enddo
                         enddo
-                     elseif(rhslist(j).and.idir.ne.1) then
+                     elseif(rhslist(j).and.idir/=1) then
                         do n=1,nodri
                            do p=1,2
                               do q=1,2
@@ -3799,23 +3799,23 @@
             interior_number(i)=0
             interior_list_index(i)=k
             do j=1,nsphere
-               if(host_sphere(j).eq.i) then
+               if(host_sphere(j)==i) then
                   interior_number(i)=interior_number(i)+1
                   interior_list(k)=j
                   k=k+1
                endif
-               if(host_sphere(i).eq.host_sphere(j).and.i.ne.j) then
+               if(host_sphere(i)==host_sphere(j).and.i/=j) then
                   external_pair(i,j)=.true.
                else
                   external_pair(i,j)=.false.
                endif
             enddo
-            if(interior_number(i).gt.0) then
+            if(interior_number(i)>0) then
                number_host_spheres=number_host_spheres+1
             endif
          enddo
          do i=1,nsphere
-            if(interior_number(i).eq.0) then
+            if(interior_number(i)==0) then
                number_field_expansions(i)=1
             else
                number_field_expansions(i)=2
@@ -3829,7 +3829,7 @@
          do i=1,nsphere
             j=i
             sphere_level(i)=0
-            do while(host_sphere(j).ne.0)
+            do while(host_sphere(j)/=0)
                j=host_sphere(j)
                sphere_level(i)=sphere_level(i)+1
             enddo
@@ -3846,7 +3846,7 @@
          k=1
          sphere_list_index(0,1)=1
          do i=1,nsphere
-            if(hostsphere(i).eq.0) then
+            if(hostsphere(i)==0) then
                reordered_sphere_list(k)=i
                k=k+1
             endif
@@ -3858,9 +3858,9 @@
             nset=1
             sphere_list_index(n,nset)=k
             do i=1,nsphere
-               if((sphere_level(i).eq.n-1).and.(interior_number(i).ne.0)) then
+               if((sphere_level(i)==n-1).and.(interior_number(i)/=0)) then
                   do j=1,nsphere
-                     if(hostsphere(j).eq.i) then
+                     if(hostsphere(j)==i) then
                         reordered_sphere_list(k)=j
                         k=k+1
                      endif
@@ -3898,7 +3898,7 @@
                     nfdistance
          complex(8) :: ri(2,0:nsphere)
          data isendok,tag/0,1/
-         if(mpicomm.eq.mpi_comm_null) return
+         if(mpicomm==mpi_comm_null) return
          call mstm_mpi(mpi_command='size',mpi_size=numprocs,mpi_comm=mpicomm)
          call mstm_mpi(mpi_command='rank',mpi_rank=rank,mpi_comm=mpicomm)
          nodrmax=maxval(nodr)
@@ -3935,20 +3935,20 @@
          esize=0
          do i=1,nsphere-1
             do j=i+1,nsphere
-               if(host_sphere(j).eq.host_sphere(i)) then
+               if(host_sphere(j)==host_sphere(i)) then
                   task=task+1
                   proc=mod(task,numprocs)
-                  if(proc.eq.rank) then
+                  if(proc==rank) then
                      noi=sphere_order(i)
                      noj=sphere_order(j)
                      xij(:)=sphere_position(:,i)-sphere_position(:,j)
                      r=sqrt(dot_product(xij,xij))
-                     if(near_field_distance.lt.0.) then
+                     if(near_field_distance<0.) then
                         nfdistance=(.5*(noi+noj))**2.
                      else
                         nfdistance=near_field_distance
                      endif
-                     if(r.le.nfdistance) then
+                     if(r<=nfdistance) then
                         nmin=min(noi,noj)
                         nmax=max(noi,noj)
                         rsize=rsize+(2*nmin+1)*(1+nmax*(nmax+2))
@@ -3965,7 +3965,7 @@
          enddo
 
          fftran_present=fftranpresent
-         if(store_tran_mat.eq.0) return
+         if(store_tran_mat==0) return
 
          stored_max_order=nodrmax
          memused(1)=dble(8*rsize+16*(tsize+esize))*1.d-6
@@ -3974,7 +3974,7 @@
                      mpi_number=1,mpi_rank=0,mpi_operation=mstm_mpi_max,mpi_comm=mpicomm)
          call mstm_mpi(mpi_command='reduce',mpi_send_buf_dp=memused,mpi_recv_buf_dp=memusedmin,&
                      mpi_number=1,mpi_rank=0,mpi_operation=mstm_mpi_min,mpi_comm=mpicomm)
-         if(rank.eq.0) then
+         if(rank==0) then
             write(runprintunit,'('' maximum translation matrix storage:'',f9.4,'' MB'')') memusedmax
             write(runprintunit,'('' minimum translation matrix storage:'',f9.4,'' MB'')') memusedmin
             call flush(runprintunit)
@@ -4067,7 +4067,7 @@
                  initial_run=initrun,rhs_list=rhslist,mpi_comm=mpicomm)
          endif
 
-         if(number_host_spheres.gt.0) then
+         if(number_host_spheres>0) then
             aout_t2=0.
             if(twoop) then
                aout_ct_t2=0.
@@ -4087,7 +4087,7 @@
          if(twoop) then
             aout_ct=conjg(aout_ct_t)
          endif
-         if(numprocs.gt.1) then
+         if(numprocs>1) then
             npi1=1
             nsend=neqns*nrhs
             npi2=nsend
@@ -4179,10 +4179,10 @@
          task=0
          do i=1,nsphere-1
             do j=i+1,nsphere
-               if(host_sphere(j).eq.host_sphere(i)) then
+               if(host_sphere(j)==host_sphere(i)) then
                   task=task+1
                   proc=mod(task,numprocs)
-                  if(proc.eq.rank) then
+                  if(proc==rank) then
                      rimedium=ref_index(:,host_sphere(i))
                      noi=sphere_order(i)
                      npi1=noffi(i)+1
@@ -4208,7 +4208,7 @@
                              number_rhs=nrhs,rhs_list=rhslist)
                         endif
                      else
-                        if((store_tran_mat.eq.1).and.smopt) then
+                        if((store_tran_mat==1).and.smopt) then
                            nmin=min(noi,noj)
                            nmax=max(noi,noj)
                            rdim=(2*nmin+1)*(1+nmax*(nmax+2))
@@ -4283,7 +4283,7 @@
             enddo
          enddo
 
-         if(store_tran_mat.eq.1.and.firstrun) then
+         if(store_tran_mat==1.and.firstrun) then
             firstrun=.false.
          endif
 
@@ -4348,11 +4348,11 @@
 
          do i=1,nsphere-1
             do j=i+1,nsphere
-               if(host_sphere(j).eq.i.or.host_sphere(i).eq.j) then
+               if(host_sphere(j)==i.or.host_sphere(i)==j) then
                   task=task+1
                   proc=mod(task,numprocs)
-                  if(proc.eq.rank) then
-                     if(host_sphere(j).eq.i) then
+                  if(proc==rank) then
+                     if(host_sphere(j)==i) then
                         extsurf=j
                         intsurf=i
                      else
@@ -4580,10 +4580,10 @@
          task=0
          do i=1,nsphere-1
             do j=i+1,nsphere
-               if(host_sphere(j).eq.host_sphere(i)) then
+               if(host_sphere(j)==host_sphere(i)) then
                   task=task+1
                   proc=mod(task,numprocs)
-                  if(proc.eq.rank) then
+                  if(proc==rank) then
                      rimedium=ref_index(:,host_sphere(i))
                      noi=sphere_order(i)
                      npi1=noffi(i)+1
@@ -4593,12 +4593,12 @@
                      npj2=noffi(j)+sphere_block(j)*nrhs
                      xij(:)=sphere_position(:,i)-sphere_position(:,j)
                      rij=sqrt(dot_product(xij,xij))
-                     if(near_field_distance.lt.0.) then
+                     if(near_field_distance<0.) then
                         nfdist=(.5*(noi+noj))**2.
                      else
                         nfdist=near_field_distance
                      endif
-                     if(rij.gt.nfdist) then
+                     if(rij>nfdist) then
                         call rottran(nodrj=noj,nodri=noi,translation_vector=xij, &
                           refractive_index=rimedium,vswf_type=3,cxj=ain(npj1:npj2), &
                           cyi=gout(npi1:npi2),cxi=ain(npi1:npi2), &
@@ -4616,7 +4616,7 @@
          enddo
          gout(1:ntot)=gout(1:ntot)-goutff(1:ntot)
 
-         if(numprocs.gt.1) then
+         if(numprocs>1) then
             npi1=1
             nsend=neqns*nrhs
             npi2=nsend
@@ -4691,8 +4691,8 @@
          endif
 
          if(present(translation_vector)) then
-            if(dot_product(translation_vector,translation_vector).lt.0.001 &
-               .and.itype.eq.1) then
+            if(dot_product(translation_vector,translation_vector)<0.001 &
+               .and.itype==1) then
                do i=1,nrhs
                   if(rhslist(i)) then
                      call transfer(nodrj,nodri,cxj(0,1,1,i),cyi(0,1,1,i))
@@ -5030,7 +5030,7 @@
          rmax=0.d0
          rimed0=2.d0/(1.d0/rimed(1)+1.d0/rimed(2))
          do i=1,nsphere
-            if(hostsphere(i).eq.0) then
+            if(hostsphere(i)==0) then
                xib(:)=rpos(:,i)-rbeam(:)
                rib=sqrt(dot_product(xib,xib))
                rmax=max(rmax,rib)
@@ -5046,9 +5046,9 @@
          do i=1,nsphere
             do j=1,numberfieldexp(i)
                nblk=2*nodr(i)*(nodr(i)+2)*2
-               if(hostsphere(i).eq.0.and.j.eq.1) then
+               if(hostsphere(i)==0.and.j==1) then
                   task=task+1
-                  if(mod(task,numprocs).eq.rank) then
+                  if(mod(task,numprocs)==rank) then
                      xib(:)=rpos(:,i)-rbeam(:)
                      call rottran(nodrj=nodrgb,nodri=nodr(i),translation_vector=xib, &
                           refractive_index=rimed,vswf_type=1, &
@@ -5060,7 +5060,7 @@
                noff=noff+nblk
             enddo
          enddo
-         if(numprocs.gt.1) then
+         if(numprocs>1) then
             nsend=neqns*2
             call mstm_mpi(mpi_command='allreduce',mpi_recv_buf_dc=pmnp, &
                     mpi_number=nsend,mpi_operation=mstm_mpi_sum, &
@@ -5105,14 +5105,14 @@
          do n=1,nmax
             kmax=min(n,mmax)
             do k=-kmax,kmax
-               if(k.le.-1) then
+               if(k<=-1) then
                   ka=n+1
                   na=-k
                else
                   ka=k
                   na=n
                endif
-               if(idir.eq.1) then
+               if(idir==1) then
                   amnt(1,k)=amn(ka,na,1)*ealpham(k)
                   amnt(2,k)=amn(ka,na,2)*ealpham(k)
                else
@@ -5151,7 +5151,7 @@
                enddo
             enddo
             do m=-n,n
-               if(m.le.-1) then
+               if(m<=-1) then
                   ka=n+1
                   na=-m
                else
@@ -5164,7 +5164,7 @@
                   a=a+dc(-k,-m)*amnt(1,k)
                   b=b+dc(-k,-m)*amnt(2,k)
                enddo
-               if(idir.eq.1) then
+               if(idir==1) then
                   amn(ka,na,1)=a*egammam(m)
                   amn(ka,na,2)=b*egammam(m)
                else
@@ -5205,7 +5205,7 @@
          do i=1,nsphere
             host=hostsphere(i)
             ri0=2.d0/(1.d0/ri(1,host)+1.d0/ri(2,host))
-            if(host.eq.0) then
+            if(host==0) then
                rpos0=0.
             else
                rpos0(:)=rpos(:,host)
@@ -5213,7 +5213,7 @@
             xi0(:)=rpos(:,i)-rpos0(:)
             r=sqrt(dot_product(xi0,xi0))
             call tranordertest(r,ri0,nodr(i),eps,ntran(i))
-            if(host.eq.0) nodrt=max(nodrt,ntran(i),nodrmax)
+            if(host==0) nodrt=max(nodrt,ntran(i),nodrmax)
          enddo
          end subroutine tranorders
 !
@@ -5254,10 +5254,10 @@
          task=0
          do i=1,nsphere
             nblk=nodr(i)*(nodr(i)+2)*2*nrhs
-            if(hostsphere(i).eq.0) then
+            if(hostsphere(i)==0) then
                task=task+1
                proc=mod(task,numprocs)
-               if(proc.eq.rank) then
+               if(proc==rank) then
                   ntrani=min(nodrt,ntran(i))
                   allocate(amnpt(0:ntrani+1,ntrani,2,nrhs))
                   amnpt=(0.d0,0.d0)
@@ -5278,7 +5278,7 @@
             endif
             noff=noff+nblk*numberfieldexp(i)
          enddo
-         if(numprocs.gt.1) then
+         if(numprocs>1) then
             nsend=2*nodrt*(nodrt+2)*nrhs
             call mstm_mpi(mpi_command='allreduce',mpi_recv_buf_dc=amnp0, &
                  mpi_number=nsend,mpi_operation=mstm_mpi_sum,mpi_comm=mpicomm)
@@ -5333,7 +5333,7 @@
                enddo
             enddo
             do m=-n,n
-               if(m.le.-1) then
+               if(m<=-1) then
                   ma=n+1
                   na=-m
                else
@@ -5342,10 +5342,10 @@
                endif
                do p1=1,npol
                   do p2=1,npol
-                     if(p1.eq.1.and.p2.eq.1) then
+                     if(p1==1.and.p2==1) then
                         k=1
                         const=1.d0
-                     elseif(p1.eq.2.and.p2.eq.2) then
+                     elseif(p1==2.and.p2==2) then
                         k=2
                         const=1.d0
                      else
@@ -5425,7 +5425,7 @@
          call external_to_external_expansion(neqns,nrhs*npol,amnp,gmnp, &
                  far_field_option=.false.,store_matrix_option=.false., &
                  mpi_comm=mpicomm)
-         if(numprocs.gt.1) then
+         if(numprocs>1) then
             nsend=ntot
             call mstm_mpi(mpi_command='allreduce',mpi_recv_buf_dc=gmnpt(1:nsend), &
                  mpi_number=nsend,mpi_operation=mstm_mpi_sum,mpi_comm=mpicomm)
@@ -5483,7 +5483,7 @@
          complex(8) :: amn0(0:nodrt+1,nodrt,2,2),sa(4),ephi,ephim(-nodrt:nodrt), &
                        ci,cin,a,b,sp(4,4)
          data ci,nodrtold,ctold/(0.d0,1.d0),0,0.d0/
-         if(nodrt.ne.nodrtold.or.ct.ne.ctold) then
+         if(nodrt/=nodrtold.or.ct/=ctold) then
             if(allocated(tau)) deallocate(tau)
             allocate(tau(0:nodrt+1,nodrt,2))
             call taufunc(ct,nodrt,tau)
@@ -5499,7 +5499,7 @@
          do n=1,nodrt
             cin=(-ci)**n
             do m=-n,n
-               if(m.le.-1) then
+               if(m<=-1) then
                   m1=n+1
                   n1=-m
                else
@@ -5542,7 +5542,7 @@
          sm(4,2)=-2.*dimag(sp(4,2)-sp(1,3))
 !         do i=1,4
 !            do j=1,4
-!               if(i.ne.1.or.j.ne.1) then
+!               if(i/=1.or.j/=1) then
 !                  sm(i,j)=sm(i,j)/sm(1,1)
 !               endif
 !            enddo
@@ -5579,7 +5579,7 @@
                w2=min(n+l,nodrg)
                call vcfunc(-1,l,1,n,vc2)
                do m=-n,n
-                  if(m.le.-1) then
+                  if(m<=-1) then
                      ma=n+1
                      na=-m
                   else
@@ -5587,7 +5587,7 @@
                      na=n
                   endif
                   do k=-l,min(l,m)
-                     if(k.le.-1) then
+                     if(k<=-1) then
                         ka=l+1
                         la=-k
                      else
@@ -5595,7 +5595,7 @@
                         la=l
                      endif
                      u=m-k
-                     if(u.le.mmax) then
+                     if(u<=mmax) then
                         ik=(-1)**k
                         c2=ik*c
                         do p=1,2
@@ -5610,7 +5610,7 @@
                         do w=w1,w2
                            uw=(w*(w+1))/2+u
                            do p=1,2
-                              if(mod(n+l+w,2).eq.0) then
+                              if(mod(n+l+w,2)==0) then
                                  q=p
                               else
                                  q=3-p
@@ -5667,7 +5667,7 @@
          sm(4,2)=temp
 !         do i=1,4
 !            do j=1,4
-!               if(i.ne.1.or.j.ne.1) then
+!               if(i/=1.or.j/=1) then
 !                  sm(i,j)=sm(i,j)/sm(1,1)
 !               endif
 !            enddo
@@ -5712,7 +5712,7 @@
             nlnum(i)=nlindex(i+1)-nlindex(i)
          enddo
          nlnum(numprocs-1)=ntot*ntot-nlindex(numprocs-1)
-         if(rank.eq.0) then
+         if(rank==0) then
             write(runprintunit,'('' SM calc, orders per processor:'',f10.4)') nlperproc
             call flush(runprintunit)
          endif
@@ -5745,17 +5745,17 @@
             call vcfunc(-1,n,-1,l,cm1m1)
             do m=-min(n,l+2),min(n,l+2)
                m1m=(-1)**m
-               if(abs(m).le.l) then
+               if(abs(m)<=l) then
                   call vcfunc(-m,n,m,l,cmmpm)
                else
                   cmmpm=0.d0
                endif
-               if(abs(-2+m).le.l) then
+               if(abs(-2+m)<=l) then
                   call vcfunc(-m,n,-2+m,l,cmmm2pm)
                else
                   cmmm2pm=0.d0
                endif
-               if(abs(2+m).le.l) then
+               if(abs(2+m)<=l) then
                   call vcfunc(-m,n,2+m,l,cmmp2pm)
                else
                   cmmp2pm=0.d0
@@ -5770,7 +5770,7 @@
                      a1m2=(a1(m,n,p)-ci*a2(m,n,p))*conjg(a1(m+2,l,q)+ci*a2(m+2,l,q))
                      do w=wmin,wmax
                         m1w=(-1)**w
-                        if(mod(n+l+w+p+q,2).eq.0) then
+                        if(mod(n+l+w+p+q,2)==0) then
                            fe=1
                            fo=0
                         else
@@ -5785,7 +5785,7 @@
                         s00(4,3,w) = s00(4,3,w)+ dimag(ci/2.*m1m*fnl*fo*a2112*cm1p1(w)*cmmpm(w))
                         s00(4,4,w) = s00(4,4,w)+ (ci/2.*m1m*fnl*fo*a2112*cm1p1(w)*cmmpm(w))
 
-                        if(w.lt.2) cycle
+                        if(w<2) cycle
 
                         s02(2,1,w) = s02(2,1,w)-(m1mq*a1122*fe*fnl*cm1m1(w)*cmmpm(w))/2.
                         s02(3,1,w) = s02(3,1,w)+ (-ci/2.*m1mq*a1122*fnl*fo*cm1m1(w)*cmmpm(w))
@@ -5928,15 +5928,15 @@
             mpi_new_group=new_group)
          call mstm_mpi(mpi_command='create',mpi_group=new_group, &
             mpi_new_comm=new_comm)
-         if(rank.le.numprocscalc-1) then
+         if(rank<=numprocscalc-1) then
 
             call mstm_mpi(mpi_command='rank',mpi_comm=new_comm, &
                mpi_rank=new_rank)
-            if(rank.eq.0) time1=mytime()
+            if(rank==0) time1=mytime()
 !
 !  read the T matrix from the file
 !
-            if(new_rank.eq.0) then
+            if(new_rank==0) then
                call getrunparameters(run_print_unit=iunit)
                open(3,file=tmatrixfile)
                read(3,*) rhscondition,nodrt,nodrrhs
@@ -5949,12 +5949,12 @@
             sizetm=4*nblk*nblkrhs
             allocate(tc(2,nblk,2,nblkrhs))
             tc=(0.,0.)
-            if(new_rank.eq.0) then
+            if(new_rank==0) then
                qext=0.d0
                qabs=0.d0
                qsca=0.d0
                do l=1,nodrrhs
-                  if(rhscondition.eq.0) then
+                  if(rhscondition==0) then
                      nstop=l
                   else
                      nstop=nodr
@@ -5972,7 +5972,7 @@
                               read(3,*) nt,mt,fc
                               tc(1,mn,q,kl)=cmplx(fc(1),fc(2))
                               tc(2,mn,q,kl)=cmplx(fc(3),fc(4))
-                              if(n.lt.l.and.rhscondition.eq.0) then
+                              if(n<l.and.rhscondition==0) then
                                  ikm=(-1)**(m+k)
                                  do p=1,2
                                     tc(q,klm,p,mnm)=tc(p,mn,q,kl)*ikm
@@ -5994,7 +5994,7 @@
 !
 !  send to the other processors
 !
-            if(numprocscalc.gt.1) then
+            if(numprocscalc>1) then
                call mstm_mpi(mpi_command='bcast',mpi_send_buf_dp=qext, &
                     mpi_number=nsphere,mpi_rank=0,mpi_comm=new_comm)
                call mstm_mpi(mpi_command='bcast',mpi_send_buf_dp=qabs, &
@@ -6006,7 +6006,7 @@
             endif
 
             allocate(dm(-nodr-1:nodr+1,3,nodr,2,nodr,2),dmcf(-nodr-1:nodr+1,3,nodr,2,nodr,2))
-            if(new_rank.eq.0) then
+            if(new_rank==0) then
                time2=mytime()-time1
                call timewrite(iunit,' t matrix read time:',time2)
                time1=mytime()
@@ -6069,7 +6069,7 @@
                wvnum(i)=wvindex(i+1)-wvindex(i)
             enddo
             wvnum(numprocscalc-1)=nblkw-wvindex(numprocscalc-1)
-            if(new_rank.eq.0) then
+            if(new_rank==0) then
                write(iunit,'('' d matrix calculation, order+degree per proc.:'',f9.2)') &
                    wvperproc
                call flush(iunit)
@@ -6104,7 +6104,7 @@
                         do k=1,2
                            do p=1,2
                               am(k,l,p)=am(k,l,p)+vc(l)*tc(p,tn,k,tvl)
-                              if(l.eq.n.and.v.eq.0) then
+                              if(l==n.and.v==0) then
                                  amcf(k,l,p)=amcf(k,l,p)+vc(l)*tc(p,tn,k,tvl)
                               endif
                            enddo
@@ -6115,14 +6115,14 @@
                      mn=nn1+m
                      do k=1,2
                         u=m-(-3+2*k)
-                        if(abs(u).le.w) then
+                        if(abs(u)<=w) then
                            lmax=min(nodrrhs,w+n)
                            call vcfunc(-u,w,m,n,vc)
                            do l=max(1,abs(w-n)),lmax
                               fl=-(-1)**l*vc(l)/dble(l+l+1)
                               do p=1,2
                                  bm(k,mn,p)=bm(k,mn,p)+am(k,l,p)*fl
-                                 if(v.eq.0) then
+                                 if(v==0) then
                                     bmcf(k,mn,p)=bmcf(k,mn,p)+amcf(k,l,p)*fl
                                  endif
                               enddo
@@ -6133,10 +6133,10 @@
                enddo
                do u=-min(w,nodr+1),min(w,nodr+1)
                   do ku=1,3
-                     if(ku.eq.1) then
+                     if(ku==1) then
                         k=-1
                         k1=-1
-                     elseif(ku.eq.2) then
+                     elseif(ku==2) then
                         k=1
                         k1=1
                      else
@@ -6160,7 +6160,7 @@
                               do p1=1,2
                                  a=bm(ik,nu,p)*cin*fl*conjg(bm(ik1,nu1,p1))
                                  dm(u,ku,n,p,n1,p1)=dm(u,ku,n,p,n1,p1)+a
-                                 if(v.eq.0) then
+                                 if(v==0) then
                                     a=bmcf(ik,nu,p)*cin*fl*conjg(bmcf(ik1,nu1,p1))
                                     dmcf(u,ku,n,p,n1,p1)=dmcf(u,ku,n,p,n1,p1)+a
                                  endif
@@ -6177,7 +6177,7 @@
                  mpi_number=sizedm,mpi_operation=mstm_mpi_sum,mpi_comm=new_comm)
             call mstm_mpi(mpi_command='allreduce',mpi_recv_buf_dc=dmcf,&
                  mpi_number=sizedm,mpi_operation=mstm_mpi_sum,mpi_comm=new_comm)
-            if(new_rank.eq.0) then
+            if(new_rank==0) then
                time2=mytime()-time1
                call timewrite(iunit,' d matrix time:',time2)
                time1=mytime()
@@ -6217,7 +6217,7 @@
                         n1max=min(w+n,nodr)
                         call vcfunc(m,n,0,w,vc)
                         do n1=ns,nodr
-                           if((n+n1.lt.w).or.(abs(n-n1).gt.w)) cycle
+                           if((n+n1<w).or.(abs(n-n1)>w)) cycle
                            fl=-(-1)**n*vc(n1)*fnr(w+w+1)/fnr(n1+n1+1)
                            do p=1,2
                               do p1=1,2
@@ -6230,7 +6230,7 @@
                         enddo
                      enddo
                   enddo
-                  if(w.lt.2) cycle
+                  if(w<2) cycle
                   m=u+1
                   m1=u-1
                   ns=max(1,abs(m))
@@ -6239,7 +6239,7 @@
                      n1max=min(w+n,nodr)
                      call vcfunc(m,n,-2,w,vc)
                      do n1=n1s,nodr
-                        if((n+n1.lt.w).or.(abs(n-n1).gt.w)) cycle
+                        if((n+n1<w).or.(abs(n-n1)>w)) cycle
                         fl=-(-1)**n*vc(n1)*fnr(w+w+1)/fnr(n1+n1+1)
                         do p=1,2
                            do p1=1,2
@@ -6276,7 +6276,7 @@
                         awcf(2,0,w)=awcf(2,0,w)+fmcf(3,n,p,n1,p1)*fl
                      enddo
                   enddo
-                  if(w.lt.2) cycle
+                  if(w<2) cycle
                   call vcfunc(1,n,-2,w,vc)
                   do n1=n1s,n1e
                      fl=2.d0*in*vc(n1)*fnr(w+w+1)/fnr(n1+n1+1)
@@ -6362,7 +6362,7 @@
                   enddo
                enddo
             enddo
-            if(new_rank.eq.0) then
+            if(new_rank==0) then
                time2=mytime()-time1
                call timewrite(iunit,' scat matrix coef time:',time2)
             endif
@@ -6399,7 +6399,7 @@
             sm(1,4)=sm(1,4)+dc(0,nn0)*smc(1,4,n)
             sm(4,1)=sm(4,1)+dc(0,nn0)*smc(4,1,n)
             sm(4,4)=sm(4,4)+dc(0,nn0)*smc(4,4,n)
-            if(n.ge.2) then
+            if(n>=2) then
                sm(1,2)=sm(1,2)+dc(2,nn0)*smc(1,2,n)
                sm(2,4)=sm(2,4)+dc(2,nn0)*smc(2,4,n)
                sm(3,4)=sm(3,4)+dc(2,nn0)*smc(3,4,n)
@@ -6417,10 +6417,10 @@
 !
 !  discontiued scaling option: now done in main program
 !
-!            if(iscale.eq.1) then
+!            if(iscale==1) then
 !               do j=1,4
 !                  do k=j,4
-!                     if(j.ne.1.or.k.ne.1) then
+!                     if(j/=1.or.k/=1) then
 !                        sm(j,k,i)=sm(j,k,i)/sm(1,1,i)
 !                     endif
 !                  enddo
@@ -6504,7 +6504,7 @@
          do i=1,nsphere
             x=xg(:)-rpos(:,i)
             r=sqrt(dot_product(x,x))
-            if(r.le.xsp(i).and.xsp(i).lt.xspmin) then
+            if(r<=xsp(i).and.xsp(i)<xspmin) then
                xspmin=xsp(i)
                insphere=i
             endif
@@ -6512,14 +6512,14 @@
 !
 !  do the calculations
 !
-         if(insphere.eq.0) then
+         if(insphere==0) then
 !
 !  outside all spheres: field = external scattered
 !
             efield=0.
             hfield=0.
             do i=1,nsphere
-               if(hostsphere(i).eq.0) then
+               if(hostsphere(i)==0) then
                   allocate(vwh(3,nblk_nf(i)))
                   x=xg(:)-rpos(:,i)
                   call vwhcalc(x,ri(:,0),nodr(i),3,vwh)
@@ -6548,7 +6548,7 @@
                 fmn3mp_nf(b11:b12))*rib/dcmplx(0.d0,1.d0)
             deallocate(vwh)
             do j=1,nsphere
-               if(hostsphere(j).eq.i) then
+               if(hostsphere(j)==i) then
                   allocate(vwh(3,nblk_nf(j)))
                   x=xg(:)-rpos(:,j)
                   call vwhcalc(x,ri(:,i),nodr(j),3,vwh)
@@ -6586,7 +6586,7 @@
 !
 !  oblique incidence: use the full expansion
 !
-         if(axialinc.eq.0) then
+         if(axialinc==0) then
             call vwhcalc(xg,rimedium,nodrc,1,vwhpw)
             nblkpw=nodrc*(nodrc+2)*2
             efield(:)=matmul(vwhpw(:,1:nblkpw),pmnp_nf(1:nblkpw))
@@ -6621,7 +6621,7 @@
          complex(8), allocatable :: pmnp0(:,:,:,:)
          allocate(pmnp0(0:nodrpw+1,nodrpw,2,2))
          if(allocated(pmnp_nf)) deallocate(pmnp_nf,pmn3mp_nf)
-         if(beta.ne.0.d0) then
+         if(beta/=0.d0) then
             axialinc=0
             ndimpw=2*nodrpw*(nodrpw+2)
          else
@@ -6629,14 +6629,14 @@
             ndimpw=4*nodrpw
          endif
          allocate(pmnp_nf(ndimpw),pmn3mp_nf(ndimpw))
-         if(cbeam.eq.0.d0) then
+         if(cbeam==0.d0) then
             call planewavecoef(alpha,beta,nodrpw,pmnp0)
          else
             call gaussianbeamcoef(alpha,beta,cbeam,nodrpw,pmnp0)
          endif
          cgamma=cos(gamma)
          sgamma=sin(gamma)
-         if(axialinc.eq.0) then
+         if(axialinc==0) then
             do n=1,nodrpw
                nn1=n*(n+1)
                do p=1,2
@@ -6697,7 +6697,7 @@
 !
 !  initialization operations: newcalc=1
 !
-         if(newcalc.eq.1) then
+         if(newcalc==1) then
             naeqns=0.
             do i=1,nsphere
                naeqns=naeqns+nodr(i)*(nodr(i)+2)*2
@@ -6709,7 +6709,7 @@
             noff_nf(1)=0
             do i=1,nsphere
                nblk_nf(i)=2*nodr(i)*(nodr(i)+2)
-               if(i.lt.nsphere) noff_nf(i+1)=noff_nf(i)+nblk_nf(i)
+               if(i<nsphere) noff_nf(i+1)=noff_nf(i)+nblk_nf(i)
             enddo
             cgamma=cos(gamma)
             sgamma=sin(gamma)
@@ -6726,7 +6726,7 @@
                       =cgamma*reshape(amnp(b11:b12),(/noi2,noi,2/)) &
                       +sgamma*reshape(amnp(b11+nblk_nf(i):b12+nblk_nf(i)), &
                           (/noi2,noi,2/))
-               if(numberfieldexp(i).eq.1) then
+               if(numberfieldexp(i)==1) then
                   call onemiecoeffmult(i,noi,amnp1,fmnp1,'c')
                else
                   b21=b11+nblk_nf(i)*2
@@ -6767,10 +6767,10 @@
 !  field coefficients, if necessary
 !
          rplot=sqrt(dot_product(xg,xg))
-         if(rplot.gt.rplotmax) then
+         if(rplot>rplotmax) then
             rplotmax=rplot
             call planewavetruncationorder(rplot,ri(:,0),epspw,n)
-            if(n.gt.nodrpwmax) then
+            if(n>nodrpwmax) then
                nodrpwmax=n
                nodrpw=n
                call nearfieldincidentcoef(nodrpw,alpha,beta,gamma,cbeam)
@@ -6786,7 +6786,7 @@
 !
 !  if the point is external to the spheres, calculate the incident field
 !
-         if(insphere.eq.0) then
+         if(insphere==0) then
             call nearfieldincidentpart(xg,nodrpwmax,ri(1,0),einc,hinc)
 !
 ! a temporary patch for alpha=beta=0
@@ -6853,9 +6853,9 @@
 !
 !  determine the plane
 !
-         if(nfplane.eq.1) then
+         if(nfplane==1) then
             gcoord=(/2,3,1/)
-         elseif(nfplane.eq.2) then
+         elseif(nfplane==2) then
             gcoord=(/3,1,2/)
          else
             gcoord=(/1,2,3/)
@@ -6877,7 +6877,7 @@
          npoints=npoints1*npoints2
          nppp=ceiling(dble(npoints)/dble(numprocs))
          allocate(efvec(3,nppp),hfvec(3,nppp))
-         if(rank.eq.0) then
+         if(rank==0) then
             allocate(efvec0(3,nppp*numprocs),hfvec0(3,nppp*numprocs))
          endif
 !
@@ -6891,7 +6891,7 @@
             do j=1,npoints2
                xgp(2)=nfplanevert(2,1)+deltax*dble(j-1)
                rplot=sqrt(dot_product(xgp,xgp))
-               if(rplot.gt.rplotmax) then
+               if(rplot>rplotmax) then
                   rplotmax=rplot
                   xgpmax=xgp
                endif
@@ -6910,19 +6910,19 @@
          nsp=0
          do i=1,nsphere
             xi0=abs(rpos(gcoord(3),i)-xg(gcoord(3)))
-            if(xi0.le.xsp(i)) then
+            if(xi0<=xsp(i)) then
                nsp=nsp+1
                xplot(1,nsp)=rpos(gcoord(1),i)+gbfocus(gcoord(1))
                xplot(2,nsp)=rpos(gcoord(2),i)+gbfocus(gcoord(2))
                ri0=xsp(i)*xsp(i)-xi0*xi0
-               if(ri0.ne.0.) ri0=sqrt(ri0)
+               if(ri0/=0.) ri0=sqrt(ri0)
                xplot(3,nsp)=ri0
             endif
          enddo
 !
 !  report to runprintunit
 !
-         if(rank.eq.0.and.runprintunit.ne.0) then
+         if(rank==0.and.runprintunit/=0) then
             write(runprintunit,'('' near field calculations'')')
             write(runprintunit,'('' plane, position:'',i5,f9.3)') nfplane,nfplanepos0
             write(runprintunit,'('' rectangular plot vertices:'')')
@@ -6939,8 +6939,8 @@
 !
 !  do the calculations and write the results to the file
 !
-         if(rank.eq.0) then
-            if(nfoutunit.ne.0) then
+         if(rank==0) then
+            if(nfoutunit/=0) then
                write(nfoutunit,*) npoints1,npoints2
                write(nfoutunit,*) nsp
                do i=1,nsp
@@ -6960,7 +6960,7 @@
             xgp(gcoord(1))=nfplanevert0(1,1)+deltax*dble(i-1)
             do j=1,npoints2
                task=task+1
-               if(mod(task,numprocs).eq.rank) then
+               if(mod(task,numprocs)==rank) then
                   k=k+1
                   xg(gcoord(2))=nfplanevert(2,1)+deltax*dble(j-1)
                   call nearfieldpointcalc(neqns,nsphere,nodr,alpha,beta,cbeam,&
@@ -6974,7 +6974,7 @@
               mpi_send_buf_dc=efvec(1:3,1:nppp),mpi_number=nsend,mpi_rank=0)
          call mstm_mpi(mpi_command='gather',mpi_recv_buf_dc=hfvec0, &
               mpi_send_buf_dc=hfvec(1:3,1:nppp),mpi_number=nsend,mpi_rank=0)
-         if(rank.eq.0) then
+         if(rank==0) then
             k=0
             k1=0
             task=-1
@@ -6984,17 +6984,17 @@
                   xgp(gcoord(2))=nfplanevert0(2,1)+deltax*dble(j-1)
                   task=task+1
                   noff=mod(task,numprocs)*nppp
-                  if(noff.eq.0) then
+                  if(noff==0) then
                      k=k+1
                   endif
                   efield(:)=efvec0(:,noff+k)
                   hfield(:)=hfvec0(:,noff+k)
-                  if(nfoutunit.ne.0) then
-                     if(nfoutdata.eq.0) then
+                  if(nfoutunit/=0) then
+                     if(nfoutdata==0) then
                         esquare=dot_product(efield(:),efield(:))
                         write(nfoutunit,'(2f9.4,e13.5)')  &
                            xgp(gcoord(1)),xgp(gcoord(2)),esquare
-                     elseif(nfoutdata.eq.1) then
+                     elseif(nfoutdata==1) then
                         write(nfoutunit,'(2f9.4,6e13.5)')  &
                            xgp(gcoord(1)),xgp(gcoord(2)),efield(:)
                      else
@@ -7080,7 +7080,7 @@
          else
             mpicomm=mpi_comm_world
          endif
-         if(mpicomm.eq.mpi_comm_null) return
+         if(mpicomm==mpi_comm_null) return
          if(present(max_mb_per_array)) then
             maxmbperarray=max_mb_per_array
          else
@@ -7091,12 +7091,12 @@
          call mstm_mpi(mpi_command='rank',mpi_rank=rank,mpi_comm=mpicomm)
          numextspheres=0
          nodrmax=maxval(nodr)
-         if(excitedsphere.eq.0) then
+         if(excitedsphere==0) then
             nodrrhs=nodrt
             rpos0=0.
             xv=0.d0
             do i=1,nsphere
-               if(hostsphere(i).eq.0) then
+               if(hostsphere(i)==0) then
                   xv=xv+xsp(i)**3.d0
                   numextspheres=numextspheres+1
                endif
@@ -7116,19 +7116,19 @@
 !
 !  perform T matrix file operations as needed
 !
-         if(rank.eq.0) then
-            if(calctmatrix.eq.1) then
+         if(rank==0) then
+            if(calctmatrix==1) then
                open(3,file=tmatrixfile)
                write(3,'(3i4)') excitedsphere,nodrt,nodrrhs
                write(3,'(i6,e13.5)') nsphere,xv
             else
                open(3,file=tmatrixfile)
-               if(rank.eq.0) write(iunit,'('' finding end of record to file '',a)') &
+               if(rank==0) write(iunit,'('' finding end of record to file '',a)') &
                   tmatrixfile
                read(3,*) i0,nodrtt,i0
                read(3,*) i0,ftemp
                do l=1,nodrt
-                  if(excitedsphere.eq.0) then
+                  if(excitedsphere==0) then
                      nstop=l
                   else
                      nstop=nodrtt
@@ -7162,12 +7162,12 @@
                lstart=lt
                read(3,*) i0,nodrtt,i0
                read(3,*) i0,ftemp
-               if(rank.eq.0) then
+               if(rank==0) then
                   write(iunit,'('' calculations begin with order '',i5)') lstart
                   call flush(iunit)
                endif
                do l=1,lstart-1
-                  if(excitedsphere.eq.0) then
+                  if(excitedsphere==0) then
                      nstop=l
                   else
                      nstop=nodrtt
@@ -7188,7 +7188,7 @@
                enddo
             endif
          endif
-         if(calctmatrix.ne.1) then
+         if(calctmatrix/=1) then
             lstarta(1)=lstart
             call mstm_mpi(mpi_command='bcast',mpi_send_buf_i=lstarta,mpi_number=1, &
                 mpi_rank=0,mpi_comm=mpicomm)
@@ -7214,7 +7214,7 @@
 !  begin the loop over RHS of the interaction equations.
 !
          do l=lstart,nodrt
-            if(rank.eq.0) timeorder=mytime()
+            if(rank==0) timeorder=mytime()
             nrhsmax=2*(2*l+1)
             narraymax=nrhsmax*neqns
             nbatch=ceiling(dble(narraymax)*16.*dble(numprocs)/(dble(maxmbperarray)*1.d6))
@@ -7224,7 +7224,7 @@
             qscal=0.
             do batch=1,nbatch
                kqstart=kqstop+1
-               if(kqstart.gt.nrhsmax) then
+               if(kqstart>nrhsmax) then
                   cycle
                endif
                kqstop=nint(batch*nrhsmax/dble(nbatch))
@@ -7241,7 +7241,7 @@
                do kq=kqstart,kqstop
                   q=mod(kq-1,2)+1
                   k=-l+floor((kq-1)/2.d0)
-                  if(k.le.-1) then
+                  if(k<=-1) then
                      ka=l+1
                      la=-k
                   else
@@ -7265,10 +7265,10 @@
                task=0
                do i=1,nsphere
                   nblk=nodr(i)*(nodr(i)+2)*2*nrhs
-                  if(hostsphere(i).eq.0.and. &
-                     (excitedsphere.eq.0.or.excitedsphere.eq.i)) then
+                  if(hostsphere(i)==0.and. &
+                     (excitedsphere==0.or.excitedsphere==i)) then
                      task=task+1
-                     if(mod(task,numprocs).eq.rank) then
+                     if(mod(task,numprocs)==rank) then
                         xij=rpos(:,i)-rpos0
                         call rottran(nodrj=l,nodri=nodr(i),translation_vector=xij, &
                            refractive_index=rimedium,vswf_type=1, &
@@ -7278,7 +7278,7 @@
                   noff=noff+nblk*numberfieldexp(i)
                enddo
                deallocate(pmnp0)
-               if(numprocs.gt.1) then
+               if(numprocs>1) then
                   nsend=neqns*nrhs
                   call mstm_mpi(mpi_command='allreduce',mpi_recv_buf_dc=pmnp, &
                        mpi_number=nsend,mpi_operation=mstm_mpi_sum)
@@ -7295,7 +7295,7 @@
                   call cbicg(neqns,nsphere,niter,epssoln,pmnpan,amnp,0, &
                        iter,err,number_rhs=nrhs,mpi_comm=mpicomm)
                endif
-               if(iter.gt.niter.or.err.gt.epssoln) istat=1
+               if(iter>niter.or.err>epssoln) istat=1
 !
 ! calculate the efficiency factors for the l column order
 !
@@ -7313,7 +7313,7 @@
 !
 !  compute the target-based expansion
 !
-               if(excitedsphere.eq.0) then
+               if(excitedsphere==0) then
                   ntran0=l
                   ntran0=min(ntran0,ntran)
                   nstop=l
@@ -7330,7 +7330,7 @@
 !
 !  write results, check for convergence
 !
-               if(rank.eq.0) then
+               if(rank==0) then
                   do kq=kqstart,kqstop
                      q=mod(kq-1,2)+1
                      k=-l+floor((kq-1)/2.d0)
@@ -7338,7 +7338,7 @@
                      write(3,'(3i5)') l,k,q
                      do n=1,nstop
                         do m=-n,n
-                           if(m.le.-1) then
+                           if(m<=-1) then
                               ma=n+1
                               na=-m
                            else
@@ -7350,8 +7350,8 @@
                         enddo
                      enddo
                   enddo
-                  if(batch.eq.nbatch) then
-                     if(istart.eq.1) then
+                  if(batch==nbatch) then
+                     if(istart==1) then
                         time1=(mytime()-timeorder)/dble(nrhsmax)
                         call timewrite(iunit,' time per solution:',time1)
                         time2=time1*dble(numsolns-2*lstart*(lstart+2))
@@ -7363,10 +7363,10 @@
                      endif
                      timeorder=(mytime()-timeorder)/dble(nrhsmax)
                      time2=timeorder*dble(numsolns-2*l*(l+2))
-                     if(time2.gt.3600.d0) then
+                     if(time2>3600.d0) then
                         time2=time2/3600.d0
                         timeunit=' hrs'
-                     elseif(time2.gt.60.d0) then
+                     elseif(time2>60.d0) then
                         time2=time2/60.d0
                         timeunit=' min'
                      else
@@ -7385,42 +7385,42 @@
             do i=1,nsphere
                qexttot=qexttot+qext(i)*xsp(i)*xsp(i)/xv/xv
                qabstot=qabstot+qabs(i)*xsp(i)*xsp(i)/xv/xv
-               if(rank.eq.0) then
+               if(rank==0) then
                   write(3,'(i5,3e17.9)') i,qextl(i),qabsl(i),qscal(i)
                endif
             enddo
             qscatot=qexttot-qabstot
-            if(excitedsphere.ne.0) qscatot=qext(excitedsphere)
+            if(excitedsphere/=0) qscatot=qext(excitedsphere)
             errqe=qexttot-qextold(1)
             errqs=qscatot-qscaold(1)
             err=max(errqe,errqs)
-            if(rank.eq.0) then
+            if(rank==0) then
                write(iunit,'(i4,i5,4e13.5,f8.2,a4)') l,iter,qexttot,qabstot, &
                   qscatot,err,time2,timeunit
                call flush(iunit)
             endif
             qextold(1)=qexttot
             qscaold(1)=qscatot
-            if(err.le.epscon.and.excitedsphere.eq.0) then
+            if(err<=epscon.and.excitedsphere==0) then
                exit
             endif
          enddo
 !
 !  solution has converged
 !
-         if(rank.eq.0) then
+         if(rank==0) then
             close(3)
-            if(l.lt.nodrt) then
+            if(l<nodrt) then
                nodrt=l
-               if(rank.eq.0) then
+               if(rank==0) then
                   write(iunit,'('' T matrix converged, order:'',i5)') nodrt
                   call flush(iunit)
                endif
                open(3,file=tmatrixfile,form='formatted',access='direct',recl=12)
                write(3,'(3i4)',rec=1) excitedsphere,nodrt,nodrt
                close(3)
-            elseif(excitedsphere.eq.0) then
-               if(rank.eq.0) then
+            elseif(excitedsphere==0) then
+               if(rank==0) then
                   write(iunit,'('' T matrix did not converge to set epsilon'')')
                   call flush(iunit)
                endif
@@ -7476,13 +7476,13 @@
          else
             mpicomm=mpi_comm_world
          endif
-         if(mpicomm.eq.mpi_comm_null) return
+         if(mpicomm==mpi_comm_null) return
          call mstm_mpi(mpi_command='size',mpi_size=numprocs,mpi_comm=mpicomm)
          call mstm_mpi(mpi_command='rank',mpi_rank=rank,mpi_comm=mpicomm)
          nodrmax=maxval(nodr)
          allocate(pmnp(neqns*2),pmnp0(neqns*2))
          gbfocus=0.d0
-         if(cbeam.eq.0.d0) then
+         if(cbeam==0.d0) then
             call sphereplanewavecoef(nsphere,neqns,nodr,nodrmax,alpha,beta,rpos, &
                   hostsphere,numberfieldexp,rimed,pmnp0)
          else
@@ -7508,14 +7508,14 @@
             call cbicgff(neqns,nsphere,niter,eps,pmnpan,amnp,iterwrite, &
                          niterstep,iter,err,number_rhs=2,mpi_comm=mpicomm)
          else
-            if(niter.ne.0) then
+            if(niter/=0) then
                call cbicg(neqns,nsphere,niter,eps,pmnpan,amnp,iterwrite, &
                          iter,err,number_rhs=2,mpi_comm=mpicomm)
             endif
          endif
          maxiter=max(iter,maxiter)
          maxerr=max(err,maxerr)
-         if(iter.gt.niter.or.err.gt.eps) istat=1
+         if(iter>niter.or.err>eps) istat=1
          deallocate(pmnpan)
 !
 !  efficiency factor calculations
@@ -7568,13 +7568,13 @@
          if(allocated(gnp)) deallocate(gnp,gnpold,pgnp,rhslist,err,enorm)
          allocate(gnp(neqns*nrhs),gnpold(neqns*nrhs),pgnp(neqns*nrhs),&
                   rhslist(nrhs),err(nrhs),enorm(nrhs))
-         if(rank.eq.0) then
+         if(rank==0) then
             call getrunparameters(run_print_unit=iunit)
          endif
          rhslist=.true.
          call dotproduct(neqns,nrhs,pnp,enorm)
          do i=1,nrhs
-            if(enorm(i).eq.0.d0) rhslist(i)=.false.
+            if(enorm(i)==0.d0) rhslist(i)=.false.
          enddo
          if(.not.any(rhslist)) return
 
@@ -7609,13 +7609,13 @@
             errmin=minval(err,mask=rhslist)
             errmax=maxval(err,mask=rhslist)
             neval=sum((/(1,i=1,nrhs)/),mask=rhslist)
-            if(rank.eq.0.and.iterwrite.eq.1) then
+            if(rank==0.and.iterwrite==1) then
                write(iunit,'(3i5,3e13.5)') &
                   istep,iter,neval,errstep,errmin,errmax
                call flush(iunit)
             endif
             epsstep=max(errmax,eps)
-            if((errmax.lt.eps.and.epsstep.le.eps).or.iter.gt.niter) exit
+            if((errmax<eps.and.epsstep<=eps).or.iter>niter) exit
          enddo
          end subroutine cbicgff
 !
@@ -7673,7 +7673,7 @@
          call mstm_mpi(mpi_command='size',mpi_size=numprocs,mpi_comm=mpicomm)
          call mstm_mpi(mpi_command='rank',mpi_rank=rank,mpi_comm=mpicomm)
          call getmiedataall(sphere_order=nodr,number_field_expansions=numberfieldexp)
-         if(rank.eq.0) then
+         if(rank==0) then
             call getrunparameters(run_print_unit=iunit)
          endif
          if(present(rhs_list)) then
@@ -7685,17 +7685,17 @@
          errmax=0.
          call dotproduct(neqns,nrhs,pnp,enorm)
          do i=1,nrhs
-            if(enorm(i).eq.0.d0) rhslist(i)=.false.
+            if(enorm(i)==0.d0) rhslist(i)=.false.
          enddo
          if(.not.any(rhslist)) return
 !
 !  setting niter < 0 runs the following simple order--of--scattering solution
 !
-         if(niter.lt.0) then
+         if(niter<0) then
             cp=anp(1:ntot)
             do iter=1,-niter
                cr=0.
-               if(iter.eq.1) then
+               if(iter==1) then
                   call sphereinteraction(neqns,nrhs,cp,cr, &
                        initial_run=.true.,rhs_list=rhslist, &
                        mpi_comm=mpicomm)
@@ -7709,7 +7709,7 @@
                do i=1,nrhs
                   if(rhslist(i)) then
                     err(i)=err(i)/enorm(i)
-                    if(err(i).lt. eps) then
+                    if(err(i)< eps) then
                        rhslist(i)=.false.
                     endif
                   endif
@@ -7717,12 +7717,12 @@
                if(.not.any(rhslist)) then
                   exit
                endif
-               if(rank.eq.0.and.iter.eq.1.and.writetime.eq.0) then
+               if(rank==0.and.iter==1.and.writetime==0) then
                   time2=mytime()-time1
                   call timewrite(iunit,' time per iteration:',time2)
                   writetime=1
                endif
-               if(rank.eq.0.and.iterwrite.eq.1) then
+               if(rank==0.and.iterwrite==1) then
                   errmin=minval(err,mask=rhslist)
                   errmax=maxval(err,mask=rhslist)
                   neval=sum((/(1,i=1,nrhs)/),mask=rhslist)
@@ -7760,7 +7760,7 @@
                enddo
             enddo
          enddo
-         if(maxval(cdabs(csk)).eq.0.d0) return
+         if(maxval(cdabs(csk))==0.d0) return
 !
 !  here starts the main iteration loop
 !
@@ -7783,8 +7783,8 @@
                   enddo
                enddo
             enddo
-            if(rank.eq.0) then
-               if(writetime.eq.0) time1=mytime()
+            if(rank==0) then
+               if(writetime==0) time1=mytime()
             endif
             call sphereinteraction(neqns,nrhs,cp,cap,cw,caw, &
                  rhs_list=rhslist,mpi_comm=mpicomm)
@@ -7806,7 +7806,7 @@
             enddo
             do k=1,nrhs
                if(rhslist(k)) then
-                  if(cdabs(cak(k)).eq.0.d0) then
+                  if(cdabs(cak(k))==0.d0) then
                      rhslist(k)=.false.
                   else
                      cak(k)=csk(k)/cak(k)
@@ -7836,7 +7836,7 @@
             do k=1,nrhs
                if(rhslist(k)) then
                   err(k)=err(k)/enorm(k)
-                  if(err(k).lt. eps.or.cdabs(csk(k)).eq.0.d0) then
+                  if(err(k)< eps.or.cdabs(csk(k))==0.d0) then
                      rhslist(k)=.false.
                   else
                      cbk(k)=csk2(k)/csk(k)
@@ -7862,7 +7862,7 @@
                   enddo
                enddo
             enddo
-            if(rank.eq.0.and.iter.eq.1.and.writetime.eq.0) then
+            if(rank==0.and.iter==1.and.writetime==0) then
                time2=mytime()-time1
                call timewrite(iunit,' time per iteration:',time2)
                writetime=1
@@ -7870,7 +7870,7 @@
             errmin=minval(err,mask=rhslist)
             errmax=maxval(err,mask=rhslist)
             neval=sum((/(1,i=1,nrhs)/),mask=rhslist)
-            if(rank.eq.0.and.iterwrite.eq.1) then
+            if(rank==0.and.iterwrite==1) then
                write(iunit,'('' iter,nrhs,errmin,errmax:'',2i5,2e13.5)') &
                   iter,neval,errmin,errmax
                call flush(iunit)
