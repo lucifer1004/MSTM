@@ -844,6 +844,8 @@
             call axialtrancoefinit(nlmax)
          endif
 
+!         Initialize act
+         act=(0.d0,0.d0)
          if(r==0.d0) then
             ac=(0.d0,0.d0)
             if(itype/=1) return

@@ -1,3 +1,5 @@
+UNAME = `uname`
+
 .PHONY: all
 all: build
 
@@ -9,14 +11,17 @@ build:
 build-parallel:
 	mpif90 -o mstmp mpidefs-parallel-v3.0.f90 mstm-intrinsics-v3.0.f90 mstm-modules-v3.0.f90 mstm-main-v3.0.f90
 
-.PHONY: mac
-mac:
-	gfortran -static -dynamiclib -fPIC -O2 mstm-modules-v3.0.f90 mstm-intrinsics-v3.0.f90 mstm-main-v3.0.f90 mpidefs-serial.f90 -o mstm.dylib
+.PHONY: compile
+compile:
+	-@make $(UNAME)
 
-.PHONY: linux
-linux:
-	gfortran -static -fPIC -O2 mstm-modules-v3.0.f90 mstm-intrinsics-v3.0.f90 mstm-main-v3.0.f90 mpidefs-serial.f90 -o mstm.so
+Linux:
+	gfortran -shared -fPIC -O2 mpidefs-serial.f90 mstm-intrinsics-v3.0.f90 mstm-modules-v3.0.f90 mstm-main-v3.0.f90 -o mstm.so
+
+Darwin:
+	gfortran -shared -dynamiclib -fPIC -O2 mpidefs-serial.f90 mstm-intrinsics-v3.0.f90 mstm-modules-v3.0.f90 mstm-main-v3.0.f90 -o mstm.dylib
+
 
 .PHONY: clean
 clean:
-	rm -f mstm *.mod
+	rm -f mstm *.mod *.dylib *.so
