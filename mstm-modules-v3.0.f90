@@ -46,6 +46,7 @@
          enddo
          if(allocated(vwh_coef)) deallocate(vwh_coef)
          allocate(vwh_coef(-notd:notd,1:notd,-1:1,-1:1))
+         vwh_coef = 0.d0
 !
 !  constants used for calculation of svwf functions.
 !
