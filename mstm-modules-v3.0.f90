@@ -1546,7 +1546,6 @@
          group_rank=rank
          root_group_rank=rank
          number_groups=1
-         proc_per_group=numprocs
          end subroutine mpisetup
 
       end module mpidata
