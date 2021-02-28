@@ -1102,8 +1102,8 @@
          real(8) :: vc1(0:nrow1+ncol1),vc2(0:nrow1+ncol1),&
                     xptran(3),r,ct,ct0
          real(8) :: drot(0:0,0:(nrow1+ncol1)*(nrow1+ncol1+2))
-         complex(8) :: ri(2),ci,ephi,ac(2,nrow1*(nrow1+2)-(nrow0-1)*(nrow0+1)-iaddrow0,&
-                       ncol1*(ncol1+2)-(ncol0-1)*(ncol0+1)-iaddcol0),&
+         complex(8) :: ri(2),ci,ephi,ac(2,nrow1*(nrow1+2)-(nrow0-1)*(nrow0+1)+iaddrow0,&
+                       ncol1*(ncol1+2)-(ncol0-1)*(ncol0+1)+iaddcol0),&
                        z(2),c,a,b,atc(2,2)
          complex(8) :: ephim(-(nrow1+ncol1):nrow1+ncol1),jnc(0:nrow1+ncol1,2)
          data ci/(0.d0,1.d0)/
