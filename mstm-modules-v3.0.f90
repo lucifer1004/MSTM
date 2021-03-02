@@ -3434,6 +3434,8 @@
          endif
          qsca=2./x/x*qsca
          qext=2./x/x*qext
+         ! should calculate qabs
+         qabs=qext-qsca
          nstop=min(n,nstop)
          return
          end subroutine mieoa
