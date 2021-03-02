@@ -3476,6 +3476,36 @@
          if(present(sphere_mie_coefficients)) sphere_mie_coefficients=an_mie
          if(present(sphere_int_mie_coefficients)) sphere_int_mie_coefficients=cn_mie
          end subroutine getmiedataall
+
+         ! TODO: Since getmiedataall cannot work properly with Julia, this method is added for testing.
+         ! It has no optional arguments, and skips sphere data fetching.
+         subroutine getmiedataallreq(nsphere, sphere_order, sphere_block, &
+                 sphere_order_offset, sphere_block_offset, sphere_qext, &
+                 sphere_qabs, sphere_mie_coefficients, sphere_int_mie_coefficients, &
+                 number_equations, max_order,optically_active, &
+                 number_field_expansions)
+            use spheredata
+            implicit none
+            integer :: nsphere, sphere_order(nsphere), sphere_block(nsphere), sphere_order_offset(nsphere + 1), &
+                    sphere_block_offset(nsphere + 1),number_equations, max_order, &
+                    number_field_expansions(nsphere), i
+            logical :: optically_active(nsphere)
+            real(8) :: sphere_qext(nsphere), sphere_qabs(nsphere)
+            complex(8) :: sphere_mie_coefficients(*), &
+                    sphere_int_mie_coefficients(*)
+            sphere_order=mie_order
+            number_field_expansions=mie_number_field_expansions
+            sphere_block=mie_block
+            sphere_order_offset=mie_offset
+            sphere_block_offset=mie_block_offset
+            sphere_qext=qext_mie
+            sphere_qabs=qabs_mie
+            number_equations=number_eqns
+            max_order=max_mie_order
+            optically_active=is_optically_active
+            sphere_mie_coefficients(1:mie_offset(nsphere + 1))=an_mie
+            sphere_int_mie_coefficients(1:mie_offset(nsphere + 1))=cn_mie
+         end subroutine getmiedataallreq
 !
 !  retrieve mie data for a single sphere
 !
